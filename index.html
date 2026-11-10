@@ -148,21 +148,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             border-left: 4px solid var(--naranja);
         }
-        .tarjeta-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        .btn-eliminar {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            opacity: 0.3;
-            transition: 0.2s;
-            padding: 4px;
-        }
-        .btn-eliminar:hover { opacity: 1; transform: scale(1.1); }
         .tarjeta-resena .autor { font-weight: 700; font-size: 1.1rem; color: #222; display: block;}
         .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 10px 0 0 0; }
         .estrellas { color: #f59e0b; margin-bottom: 3px; font-size: 0.9rem; }
@@ -176,7 +161,7 @@
         .form-resena h3 { margin-top: 0; font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; }
         .campo-grupo { margin-bottom: 20px; }
         .campo-grupo label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: #333; }
-        .campo-grupo input, .campo-grupo textarea {
+        .campo-grupo input, .campo-grupo textarea, .campo-grupo select {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #ddd;
@@ -185,8 +170,9 @@
             font-size: 0.95rem;
             box-sizing: border-box;
             transition: 0.3s;
+            background-color: white;
         }
-        .campo-grupo input:focus, .campo-grupo textarea:focus {
+        .campo-grupo input:focus, .campo-grupo textarea:focus, .campo-grupo select:focus {
             outline: none;
             border-color: var(--naranja);
             box-shadow: 0 0 0 3px rgba(240, 84, 35, 0.1);
@@ -328,6 +314,16 @@
                         <input type="text" id="apellido" placeholder="Ej: Coppola" required>
                     </div>
                     <div class="campo-grupo">
+                        <label for="estrellas">Calificación</label>
+                        <select id="estrellas" required>
+                            <option value="5">★★★★★ (5/5)</option>
+                            <option value="4">★★★★☆ (4/5)</option>
+                            <option value="3">★★★☆☆ (3/5)</option>
+                            <option value="2">★★☆☆☆ (2/5)</option>
+                            <option value="1">★☆☆☆☆ (1/5)</option>
+                        </select>
+                    </div>
+                    <div class="campo-grupo">
                         <label for="comentario">¿Qué te parecieron las clases?</label>
                         <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
                     </div>
@@ -347,9 +343,8 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- SCRIPT LOCALSTORAGE (SIN ERRORES) -->
+    <!-- SCRIPT LOCALSTORAGE CON CALIFICACIÓN DINÁMICA -->
     <script>
-        const CLAVE_ADMIN = "1234";
         const contenedor = document.getElementById('contenedorResenas');
         const form = document.getElementById('formResena');
 
@@ -371,17 +366,15 @@
                 return;
             }
 
-            resenas.forEach((r, index) => {
+            resenas.forEach((r) => {
+                const numEstrellas = parseInt(r.estrellas) || 5;
+                const estrellasTexto = "★".repeat(numEstrellas) + "☆".repeat(5 - numEstrellas);
+
                 const tarjeta = document.createElement('div');
                 tarjeta.classList.add('tarjeta-resena');
                 tarjeta.innerHTML = `
-                    <div class="tarjeta-header">
-                        <div>
-                            <div class="estrellas">★★★★★</div>
-                            <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
-                        </div>
-                        <button class="btn-eliminar" onclick="eliminarResena(${index})" title="Eliminar reseña">🗑️</button>
-                    </div>
+                    <div class="estrellas">${estrellasTexto}</div>
+                    <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
                     <p class="comentario">${escapeHTML(r.comentario)}</p>
                 `;
                 contenedor.appendChild(tarjeta);
@@ -393,29 +386,17 @@
 
             const nombre = document.getElementById('nombre').value.trim();
             const apellido = document.getElementById('apellido').value.trim();
+            const estrellas = document.getElementById('estrellas').value;
             const comentario = document.getElementById('comentario').value.trim();
 
             const nuevasResenas = obtenerResenas();
-            nuevasResenas.unshift({ nombre, apellido, comentario });
+            nuevasResenas.unshift({ nombre, apellido, estrellas, comentario });
 
             guardarResenas(nuevasResenas);
             form.reset();
             renderizarResenas();
             alert('¡Reseña publicada con éxito!');
         });
-
-        function eliminarResena(index) {
-            const claveIngresada = prompt("Ingresá tu clave de administrador para borrar esta reseña:");
-            if (claveIngresada === CLAVE_ADMIN) {
-                const resenas = obtenerResenas();
-                resenas.splice(index, 1);
-                guardarResenas(resenas);
-                renderizarResenas();
-                alert("Reseña eliminada.");
-            } else if (claveIngresada !== null) {
-                alert("Clave incorrecta.");
-            }
-        }
 
         function escapeHTML(str) {
             return str.replace(/[&<>'"]/g, 
