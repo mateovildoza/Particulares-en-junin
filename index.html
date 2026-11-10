@@ -6,137 +6,6 @@
     <title>Mateo Vildoza - Tenis de Mesa</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- SDK de Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // ==========================================
-        // REEMPLAZÁ ESTO CON TUS DATOS DE FIREBASE
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "tu-proyecto.firebaseapp.com",
-            projectId: "tu-proyecto",
-            storageBucket: "tu-proyecto.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // CLAVE PARA BORRAR RESEÑAS (Cambiá esto por la clave que quieras)
-        const CLAVE_ADMIN = "1234"; 
-
-        const contenedor = document.getElementById('contenedorResenas');
-        const form = document.getElementById('formResena');
-
-        // Función para cargar reseñas
-        async function cargarResenas() {
-            contenedor.innerHTML = "<p style='color: #666;'>Cargando opiniones...</p>";
-            try {
-                const q = query(collection(db, "resenas"), orderBy("fecha", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                contenedor.innerHTML = "";
-                
-                if(querySnapshot.empty) {
-                    contenedor.innerHTML = "<p style='color: #666;'>Todavía no hay reseñas. ¡Sé el primero en dejar una!</p>";
-                    return;
-                }
-
-                querySnapshot.forEach((documento) => {
-                    const r = documento.data();
-                    const docId = documento.id;
-
-                    const tarjeta = document.createElement('div');
-                    tarjeta.classList.add('tarjeta-resena');
-                    tarjeta.innerHTML = `
-                        <div class="tarjeta-header">
-                            <div>
-                                <div class="estrellas">★★★★★</div>
-                                <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
-                                <span class="categoria">Usuario: @${escapeHTML(r.usuario)}</span>
-                            </div>
-                            <button class="btn-eliminar" data-id="${docId}" title="Eliminar reseña (solo admin)">🗑️</button>
-                        </div>
-                        <p class="comentario">${escapeHTML(r.comentario)}</p>
-                    `;
-                    contenedor.appendChild(tarjeta);
-                });
-
-                // Asignar eventos a los botones de eliminar
-                document.querySelectorAll('.btn-eliminar').forEach(btn => {
-                    btn.addEventListener('click', async function() {
-                        const id = this.getAttribute('data-id');
-                        const passwordIngresada = prompt("Ingresá tu clave de administrador para eliminar esta reseña:");
-                        
-                        if (passwordIngresada === CLAVE_ADMIN) {
-                            try {
-                                await deleteDoc(doc(db, "resenas", id));
-                                alert("Reseña eliminada correctamente.");
-                                cargarResenas();
-                            } catch (error) {
-                                console.error("Error al eliminar:", error);
-                                alert("Hubo un error al eliminar la reseña.");
-                            }
-                        } else if (passwordIngresada !== null) {
-                            alert("Clave incorrecta. No tenés permiso para eliminar.");
-                        }
-                    });
-                });
-
-            } catch (e) {
-                console.error("Error cargando reseñas: ", e);
-                contenedor.innerHTML = "<p style='color: #d9534f;'>Configurá tus credenciales de Firebase en el código para ver y guardar reseñas.</p>";
-            }
-        }
-
-        // Función para agregar reseña
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const btn = document.getElementById('btnEnviar');
-            btn.textContent = "Enviando...";
-            btn.disabled = true;
-
-            const nombre = document.getElementById('nombre').value.trim();
-            const apellido = document.getElementById('apellido').value.trim();
-            const usuario = document.getElementById('usuario').value.trim();
-            const comentario = document.getElementById('comentario').value.trim();
-
-            try {
-                await addDoc(collection(db, "resenas"), {
-                    nombre: nombre,
-                    apellido: apellido,
-                    usuario: usuario,
-                    comentario: comentario,
-                    fecha: serverTimestamp()
-                });
-
-                form.reset();
-                alert('¡Reseña publicada con éxito!');
-                cargarResenas();
-            } catch (e) {
-                console.error("Error al guardar: ", e);
-                alert('Hubo un error al publicar. Asegurate de haber configurado bien las credenciales de Firebase.');
-            } finally {
-                // Esto asegura que el botón SIEMPRE vuelva a la normalidad aunque falle
-                btn.textContent = "Publicar Reseña";
-                btn.disabled = false;
-            }
-        });
-
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-
-        window.addEventListener('DOMContentLoaded', cargarResenas);
-    </script>
-
     <style>
         :root {
             --naranja: #f05423;
@@ -295,7 +164,6 @@
         }
         .btn-eliminar:hover { opacity: 1; transform: scale(1.1); }
         .tarjeta-resena .autor { font-weight: 700; font-size: 1.1rem; color: #222; display: block;}
-        .tarjeta-resena .categoria { font-size: 0.8rem; color: var(--naranja); font-weight: 600; margin-bottom: 8px; display: block; }
         .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 10px 0 0 0; }
         .estrellas { color: #f59e0b; margin-bottom: 3px; font-size: 0.9rem; }
 
@@ -365,7 +233,6 @@
             <li><a href="#metodo">Cómo trabajo</a></li>
             <li><a href="#donde">Ubicación</a></li>
             <li><a href="#resenas" style="color: var(--naranja);">Reseñas ⭐</a></li>
-            <!-- WhatsApp en pestaña nueva con target="_blank" -->
             <li><a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-whatsapp" style="padding: 8px 18px; font-size: 0.85rem;">Contacto</a></li>
         </ul>
     </nav>
@@ -374,7 +241,6 @@
         <div class="hero-tag">Mateo Vildoza</div>
         <h1>Te ayudo a mejorar tu nivel en el <span>tenis de mesa</span></h1>
         <p>Clases particulares, individuales y personalizadas — trabajamos lo que vos realmente necesitás mejorar.</p>
-        <!-- WhatsApp en pestaña nueva con target="_blank" -->
         <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">Escribime por WhatsApp</a>
     </section>
 
@@ -447,7 +313,7 @@
 
         <div class="resenas-contenedor">
             <div class="lista-resenas" id="contenedorResenas">
-                <!-- Reseñas cargadas dinámicamente -->
+                <!-- Se cargan dinámicamente -->
             </div>
 
             <div class="form-resena">
@@ -462,10 +328,6 @@
                         <input type="text" id="apellido" placeholder="Ej: Coppola" required>
                     </div>
                     <div class="campo-grupo">
-                        <label for="usuario">Nombre de usuario (ej: apodo o red social)</label>
-                        <input type="text" id="usuario" placeholder="Ej: santi_tt" required>
-                    </div>
-                    <div class="campo-grupo">
                         <label for="comentario">¿Qué te parecieron las clases?</label>
                         <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
                     </div>
@@ -478,7 +340,6 @@
     <section class="final">
         <h2>¿Empezamos?</h2>
         <p>Si querés consultar por clases o por el análisis de juego, escribime directamente por WhatsApp.</p>
-        <!-- WhatsApp en pestaña nueva con target="_blank" -->
         <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">Escribime por WhatsApp</a>
     </section>
 
@@ -486,5 +347,83 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
+    <!-- SCRIPT LOCALSTORAGE (SIN ERRORES) -->
+    <script>
+        const CLAVE_ADMIN = "1234";
+        const contenedor = document.getElementById('contenedorResenas');
+        const form = document.getElementById('formResena');
+
+        function obtenerResenas() {
+            const resenasGuardadas = localStorage.getItem('resenas_locales');
+            return resenasGuardadas ? JSON.parse(resenasGuardadas) : [];
+        }
+
+        function guardarResenas(lista) {
+            localStorage.setItem('resenas_locales', JSON.stringify(lista));
+        }
+
+        function renderizarResenas() {
+            const resenas = obtenerResenas();
+            contenedor.innerHTML = "";
+
+            if (resenas.length === 0) {
+                contenedor.innerHTML = "<p style='color: #666;'>Todavía no hay reseñas. ¡Sé el primero en dejar una!</p>";
+                return;
+            }
+
+            resenas.forEach((r, index) => {
+                const tarjeta = document.createElement('div');
+                tarjeta.classList.add('tarjeta-resena');
+                tarjeta.innerHTML = `
+                    <div class="tarjeta-header">
+                        <div>
+                            <div class="estrellas">★★★★★</div>
+                            <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
+                        </div>
+                        <button class="btn-eliminar" onclick="eliminarResena(${index})" title="Eliminar reseña">🗑️</button>
+                    </div>
+                    <p class="comentario">${escapeHTML(r.comentario)}</p>
+                `;
+                contenedor.appendChild(tarjeta);
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellido = document.getElementById('apellido').value.trim();
+            const comentario = document.getElementById('comentario').value.trim();
+
+            const nuevasResenas = obtenerResenas();
+            nuevasResenas.unshift({ nombre, apellido, comentario });
+
+            guardarResenas(nuevasResenas);
+            form.reset();
+            renderizarResenas();
+            alert('¡Reseña publicada con éxito!');
+        });
+
+        function eliminarResena(index) {
+            const claveIngresada = prompt("Ingresá tu clave de administrador para borrar esta reseña:");
+            if (claveIngresada === CLAVE_ADMIN) {
+                const resenas = obtenerResenas();
+                resenas.splice(index, 1);
+                guardarResenas(resenas);
+                renderizarResenas();
+                alert("Reseña eliminada.");
+            } else if (claveIngresada !== null) {
+                alert("Clave incorrecta.");
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        document.addEventListener('DOMContentLoaded', renderizarResenas);
+    </script>
 </body>
 </html>
