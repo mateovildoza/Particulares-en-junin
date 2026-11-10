@@ -157,12 +157,15 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
-            opacity: 0.4;
+            font-size: 0.85rem;
+            color: #d9534f;
+            font-weight: 600;
+            opacity: 0.7;
             transition: 0.2s;
-            padding: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
         }
-        .btn-eliminar:hover { opacity: 1; transform: scale(1.1); }
+        .btn-eliminar:hover { opacity: 1; background: rgba(217, 83, 79, 0.1); }
         .tarjeta-resena .autor { font-weight: 700; font-size: 1.1rem; color: #222; display: block;}
         .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 10px 0 0 0; }
         .estrellas { color: #f59e0b; margin-bottom: 3px; font-size: 0.9rem; }
@@ -292,7 +295,7 @@
         <div class="banner-naranja">
             <span class="tag-opcional">SERVICIO OPCIONAL</span>
             <h2>Análisis personalizado de juego</h2>
-            <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
+            <p>Além de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
         </div>
     </section>
 
@@ -339,10 +342,6 @@
                         </select>
                     </div>
                     <div class="campo-grupo">
-                        <label for="pin">PIN de seguridad (4 números para poder borrar tu reseña luego)</label>
-                        <input type="password" id="pin" maxlength="4" placeholder="Ej: 1234" required>
-                    </div>
-                    <div class="campo-grupo">
                         <label for="comentario">¿Qué te parecieron las clases?</label>
                         <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
                     </div>
@@ -362,7 +361,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- SCRIPT CON PIN PERSONAL PARA BORRAR PROPIA RESEÑA -->
+    <!-- SCRIPT SIN PIN (BORRADO DIRECTO) -->
     <script>
         const contenedor = document.getElementById('contenedorResenas');
         const form = document.getElementById('formResena');
@@ -397,7 +396,7 @@
                             <div class="estrellas">${estrellasTexto}</div>
                             <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
                         </div>
-                        <button class="btn-eliminar" onclick="borrarPropiaResena(${index})" title="Borrar mi reseña">🗑️ Borrar</button>
+                        <button class="btn-eliminar" onclick="borrarResena(${index})">🗑️ Borrar</button>
                     </div>
                     <p class="comentario">${escapeHTML(r.comentario)}</p>
                 `;
@@ -411,31 +410,23 @@
             const nombre = document.getElementById('nombre').value.trim();
             const apellido = document.getElementById('apellido').value.trim();
             const estrellas = document.getElementById('estrellas').value;
-            const pin = document.getElementById('pin').value.trim();
             const comentario = document.getElementById('comentario').value.trim();
 
             const nuevasResenas = obtenerResenas();
-            nuevasResenas.unshift({ nombre, apellido, estrellas, pin, comentario });
+            nuevasResenas.unshift({ nombre, apellido, estrellas, comentario });
 
             guardarResenas(nuevasResenas);
             form.reset();
             renderizarResenas();
-            alert('¡Reseña publicada con éxito! Guardá tu PIN de 4 dígitos si querés borrarla después.');
+            alert('¡Reseña publicada con éxito!');
         });
 
-        function borrarPropiaResena(index) {
-            const resenas = obtenerResenas();
-            const resenaActual = resenas[index];
-
-            const pinIngresado = prompt(`Ingresá el PIN de 4 dígitos que creó ${resenaActual.nombre} para borrar esta reseña:`);
-            
-            if (pinIngresado === resenaActual.pin) {
+        function borrarResena(index) {
+            if (confirm("¿Estás seguro de que querés borrar esta reseña?")) {
+                const resenas = obtenerResenas();
                 resenas.splice(index, 1);
                 guardarResenas(resenas);
                 renderizarResenas();
-                alert("Reseña eliminada con éxito.");
-            } else if (pinIngresado !== null) {
-                alert("PIN incorrecto. No se pudo eliminar la reseña.");
             }
         }
 
