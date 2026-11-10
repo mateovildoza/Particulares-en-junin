@@ -290,7 +290,11 @@
                 <li><a href="#donde">Ubicación</a></li>
                 <li><a href="#resenas" style="color: var(--naranja);">Reseñas ⭐</a></li>
             </ul>
-            <div class="auth-bar" id="authBar"></div>
+            <!-- Barra de autenticación con botones iniciales visibles para evitar parpadeos -->
+            <div class="auth-bar" id="authBar">
+                <button id="btnAbrirLoginNav" class="btn-auth-primario">Iniciar Sesión</button>
+                <button id="btnAbrirRegistroNav" class="btn-auth-secundario">Registrarse</button>
+            </div>
         </div>
     </nav>
 
@@ -375,7 +379,7 @@
                 <h3>Dejanos tu reseña</h3>
                 <div id="bloqueLoginRequerido" style="text-align: center; padding: 20px 0;">
                     <p style="color: #666; margin-bottom: 20px;">Iniciá sesión o registrate para poder dejar una opinión sobre las clases.</p>
-                    <button onclick="abrirModal('modalLogin')" class="btn-auth-primario" style="padding: 12px 24px; font-size: 1rem;">Iniciar Sesión</button>
+                    <button id="btnAbrirLoginResena" class="btn-auth-primario" style="padding: 12px 24px; font-size: 1rem;">Iniciar Sesión</button>
                 </div>
 
                 <div id="bloqueFormResena" style="display: none;">
@@ -403,7 +407,7 @@
 
     <div class="modal-overlay" id="modalLogin">
         <div class="modal-box">
-            <button class="modal-cerrar" onclick="cerrarModales()">&times;</button>
+            <button class="modal-cerrar" id="cerrarModalLogin">&times;</button>
             <h3>Iniciar Sesión</h3>
             <form id="formLogin">
                 <div class="campo-grupo">
@@ -421,7 +425,7 @@
 
     <div class="modal-overlay" id="modalRegistro">
         <div class="modal-box">
-            <button class="modal-cerrar" onclick="cerrarModales()">&times;</button>
+            <button class="modal-cerrar" id="cerrarModalRegistro">&times;</button>
             <h3>Crear Cuenta</h3>
             <form id="formRegistro">
                 <div class="campo-grupo">
@@ -476,6 +480,20 @@
         const db = getFirestore(app);
 
         let usuarioActual = null;
+
+        // Funciones de Modales seguras vinculadas por JS
+        function abrirModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function cerrarModales() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        // Eventos para abrir y cerrar modales de forma robusta
+        document.getElementById('cerrarModalLogin').addEventListener('click', cerrarModales);
+        document.getElementById('cerrarModalRegistro').addEventListener('click', cerrarModales);
+
+        document.getElementById('btnAbrirLoginResena').addEventListener('click', () => abrirModal('modalLogin'));
 
         onAuthStateChanged(auth, (user) => {
             const authBar = document.getElementById('authBar');
@@ -611,7 +629,6 @@
                 });
                 cerrarModales();
                 alert('¡Cuenta creada e sesión iniciada!');
-            } else {
             } catch (error) {
                 alert('Error al crear cuenta: ' + error.message);
             }
@@ -630,11 +647,6 @@
                 alert('Email o contraseña incorrectos.');
             }
         });
-
-        window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
-        window.cerrarModales = () => {
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-        };
 
         function escapeHTML(str) {
             return str.replace(/[&<>'"]/g, 
