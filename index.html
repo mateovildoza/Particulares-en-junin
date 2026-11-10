@@ -6,6 +6,206 @@
     <title>Mateo Vildoza - Tenis de Mesa</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- SDK de Firebase para Usuarios y Base de Datos Global -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // =========================================================
+        // REEMPLAZÁ ESTOS DATOS CON TUS CREDENCIALES DE FIREBASE
+        // =========================================================
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "tu-proyecto.firebaseapp.com",
+            projectId: "tu-proyecto",
+            storageBucket: "tu-proyecto.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let usuarioActual = null;
+
+        // --- CONTROL DE SESIÓN ---
+        onAuthStateChanged(auth, (user) => {
+            const authBar = document.getElementById('authBar');
+            usuarioActual = user;
+
+            if (user) {
+                // Usuario logueado
+                const nombreMostrar = user.displayName || user.email;
+                authBar.innerHTML = `
+                    <span class="user-welcome">Hola, <strong>${escapeHTML(nombreMostrar)}</strong></span>
+                    <button id="btnLogout" class="btn-auth-secundario">Cerrar Sesión</button>
+                `;
+                document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
+                document.getElementById('bloqueFormResena').style.display = 'block';
+                document.getElementById('bloqueLoginRequerido').style.display = 'none';
+            } else {
+                // Usuario no logueado
+                authBar.innerHTML = `
+                    <button id="btnAbrirLogin" class="btn-auth-primario">Iniciar Sesión</button>
+                    <button id="btnAbrirRegistro" class="btn-auth-secundario">Registrarse</button>
+                `;
+                document.getElementById('btnAbrirLogin').addEventListener('click', () => abrirModal('modalLogin'));
+                document.getElementById('btnAbrirRegistro').addEventListener('click', () => abrirModal('modalRegistro'));
+                document.getElementById('bloqueFormResena').style.display = 'none';
+                document.getElementById('bloqueLoginRequerido').style.display = 'block';
+            }
+            cargarResenas();
+        });
+
+        // --- CARGAR RESEÑAS EN TIEMPO REAL DESDE LA NUBE ---
+        async function cargarResenas() {
+            const contenedor = document.getElementById('contenedorResenas');
+            contenedor.innerHTML = "<p style='color: #666;'>Cargando opiniones...</p>";
+            
+            try {
+                const q = query(collection(db, "resenas"), orderBy("fecha", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                contenedor.innerHTML = "";
+                
+                if(querySnapshot.empty) {
+                    contenedor.innerHTML = "<p style='color: #666;'>Todavía no hay reseñas. ¡Iniciá sesión y sé el primero!</p>";
+                    return;
+                }
+
+                querySnapshot.forEach((documento) => {
+                    const r = documento.data();
+                    const docId = documento.id;
+                    const numEstrellas = parseInt(r.estrellas) || 5;
+                    const estrellasTexto = "★".repeat(numEstrellas) + "☆".repeat(5 - numEstrellas);
+
+                    // Verificar si la reseña pertenece al usuario actual para mostrar botón de borrar
+                    const esMiResena = usuarioActual && usuarioActual.uid === r.userId;
+
+                    const tarjeta = document.createElement('div');
+                    tarjeta.classList.add('tarjeta-resena');
+                    tarjeta.innerHTML = `
+                        <div class="tarjeta-header">
+                            <div>
+                                <div class="estrellas">${estrellasTexto}</div>
+                                <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
+                            </div>
+                            ${esMiResena ? `<button class="btn-eliminar" data-id="${docId}">🗑️ Borrar mi reseña</button>` : ''}
+                        </div>
+                        <p class="comentario">${escapeHTML(r.comentario)}</p>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                });
+
+                // Asignar eventos a botones de borrar
+                document.querySelectorAll('.btn-eliminar').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const id = this.getAttribute('data-id');
+                        if (confirm("¿Querés borrar tu reseña?")) {
+                            try {
+                                await deleteDoc(doc(db, "resenas", id));
+                                alert("Reseña eliminada.");
+                                cargarResenas();
+                            } catch(e) {
+                                alert("Error al borrar la reseña.");
+                            }
+                        }
+                    });
+                });
+
+            } catch (e) {
+                contenedor.innerHTML = "<p style='color: #d9534f;'>Configurá las credenciales de Firebase en el código para ver las reseñas en vivo.</p>";
+            }
+        }
+
+        // --- PUBLICAR NUEVA RESEÑA ---
+        document.getElementById('formResena').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!usuarioActual) return;
+
+            const btn = document.getElementById('btnEnviar');
+            btn.textContent = "Publicando...";
+            btn.disabled = true;
+
+            const estrellas = document.getElementById('estrellas').value;
+            const comentario = document.getElementById('comentario').value.trim();
+
+            // Usar nombre guardado en la cuenta o separar el displayName
+            const partesNombre = (usuarioActual.displayName || "Alumno").split(" ");
+            const nombre = partesNombre[0] || "Alumno";
+            const apellido = partesNombre.slice(1).join(" ") || "";
+
+            try {
+                await addDoc(collection(db, "resenas"), {
+                    userId: usuarioActual.uid,
+                    nombre: nombre,
+                    apellido: apellido,
+                    estrellas: estrellas,
+                    comentario: comentario,
+                    fecha: serverTimestamp()
+                });
+
+                document.getElementById('comentario').value = "";
+                alert('¡Reseña publicada con éxito en todos los dispositivos!');
+                cargarResenas();
+            } catch (e) {
+                alert('Error al publicar reseña.');
+            } finally {
+                btn.textContent = "Publicar Reseña";
+                btn.disabled = false;
+            }
+        });
+
+        // --- REGISTRO DE USUARIO ---
+        document.getElementById('formRegistro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('regNombre').value.trim();
+            const apellido = document.getElementById('regApellido').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, {
+                    displayName: `${nombre} ${apellido}`
+                });
+                cerrarModales();
+                alert('¡Cuenta creada e sesión iniciada!');
+            } catch (error) {
+                alert('Error al crear cuenta: ' + error.message);
+            }
+        });
+
+        // --- INICIO DE SESIÓN ---
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                cerrarModales();
+                alert('¡Sesión iniciada correctamente!');
+            } catch (error) {
+                alert('Email o contraseña incorrectos.');
+            }
+        });
+
+        // Auxiliares Modales
+        window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
+        window.cerrarModales = () => {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        };
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+    </script>
+
     <style>
         :root {
             --naranja: #f05423;
@@ -40,9 +240,35 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .nav-logo { color: white; font-weight: 800; text-decoration: none; font-size: 1.1rem; }
-        .nav-links { display: flex; gap: 25px; list-style: none; margin: 0; padding: 0; align-items: center; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-links { display: flex; gap: 20px; list-style: none; margin: 0; padding: 0; align-items: center; }
         .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: var(--naranja); }
+        .nav-links a:hover { color: var(--naranja); }
+
+        /* Estilos Barra de Autenticación Arriba a la Derecha */
+        .auth-bar { display: flex; align-items: center; gap: 10px; }
+        .user-welcome { color: white; font-size: 0.85rem; }
+        .btn-auth-primario {
+            background-color: var(--naranja);
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-auth-secundario {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-auth-secundario:hover { background: rgba(255,255,255,0.2); }
 
         section { padding: 80px 10%; text-align: center; }
 
@@ -209,6 +435,33 @@
         }
         .btn-enviar-resena:hover { opacity: 0.9; transform: translateY(-2px); }
 
+        /* Estilos Ventanas Modales (Login / Registro) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        .modal-box h3 { margin-top: 0; font-size: 1.8rem; font-weight: 800; }
+        .modal-cerrar {
+            position: absolute;
+            top: 15px; right: 20px;
+            background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
+        }
+
         .final { background-color: var(--fondo-oscuro); color: white; padding: 120px 10%; text-align: center; }
         .final h2 { font-size: 4rem; font-weight: 900; margin-bottom: 20px; }
         .final p { font-size: 1.2rem; opacity: 0.7; margin-bottom: 40px; }
@@ -229,16 +482,22 @@
 </head>
 <body>
 
+    <!-- NAV CON BOTONES DE LOGIN/REGISTRO EN LA ESQUINA DERECHA -->
     <nav class="navbar">
         <a href="#" class="nav-logo">Mateo Vildoza</a>
-        <ul class="nav-links">
-            <li><a href="#clases">Clases</a></li>
-            <li><a href="#trabajamos">Qué vemos</a></li>
-            <li><a href="#metodo">Cómo trabajo</a></li>
-            <li><a href="#donde">Ubicación</a></li>
-            <li><a href="#resenas" style="color: var(--naranja);">Reseñas ⭐</a></li>
-            <li><a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-whatsapp" style="padding: 8px 18px; font-size: 0.85rem;">Contacto</a></li>
-        </ul>
+        <div class="nav-right">
+            <ul class="nav-links">
+                <li><a href="#clases">Clases</a></li>
+                <li><a href="#trabajamos">Qué vemos</a></li>
+                <li><a href="#metodo">Cómo trabajo</a></li>
+                <li><a href="#donde">Ubicación</a></li>
+                <li><a href="#resenas" style="color: var(--naranja);">Reseñas ⭐</a></li>
+            </ul>
+            <!-- Espacio dinámico para Iniciar Sesión / Registrarse / Usuario -->
+            <div class="auth-bar" id="authBar">
+                <!-- Se dibuja automáticamente por JavaScript -->
+            </div>
+        </div>
     </nav>
 
     <section class="hero">
@@ -295,7 +554,7 @@
         <div class="banner-naranja">
             <span class="tag-opcional">SERVICIO OPCIONAL</span>
             <h2>Análisis personalizado de juego</h2>
-            <p>Além de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
+            <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
         </div>
     </section>
 
@@ -317,39 +576,87 @@
 
         <div class="resenas-contenedor">
             <div class="lista-resenas" id="contenedorResenas">
-                <!-- Se cargan dinámicamente -->
+                <!-- Se cargan en tiempo real desde la nube -->
             </div>
 
             <div class="form-resena">
                 <h3>Dejanos tu reseña</h3>
-                <form id="formResena">
-                    <div class="campo-grupo">
-                        <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" placeholder="Ej: Santiago" required>
-                    </div>
-                    <div class="campo-grupo">
-                        <label for="apellido">Apellido</label>
-                        <input type="text" id="apellido" placeholder="Ej: Coppola" required>
-                    </div>
-                    <div class="campo-grupo">
-                        <label for="estrellas">Calificación</label>
-                        <select id="estrellas" required>
-                            <option value="5">★★★★★ (5/5)</option>
-                            <option value="4">★★★★☆ (4/5)</option>
-                            <option value="3">★★★☆☆ (3/5)</option>
-                            <option value="2">★★☆☆☆ (2/5)</option>
-                            <option value="1">★☆☆☆☆ (1/5)</option>
-                        </select>
-                    </div>
-                    <div class="campo-grupo">
-                        <label for="comentario">¿Qué te parecieron las clases?</label>
-                        <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
-                    </div>
-                    <button type="submit" id="btnEnviar" class="btn-enviar-resena">Publicar Reseña</button>
-                </form>
+
+                <!-- Muestra esto si NO inició sesión -->
+                <div id="bloqueLoginRequerido" style="text-align: center; padding: 20px 0;">
+                    <p style="color: #666; margin-bottom: 20px;">Iniciá sesión o registrate para poder dejar una opinión sobre las clases.</p>
+                    <button onclick="abrirModal('modalLogin')" class="btn-auth-primario" style="padding: 12px 24px; font-size: 1rem;">Iniciar Sesión</button>
+                </div>
+
+                <!-- Muestra el formulario SOLO si inició sesión -->
+                <div id="bloqueFormResena" style="display: none;">
+                    <form id="formResena">
+                        <div class="campo-grupo">
+                            <label for="estrellas">Calificación</label>
+                            <select id="estrellas" required>
+                                <option value="5">★★★★★ (5/5)</option>
+                                <option value="4">★★★★☆ (4/5)</option>
+                                <option value="3">★★★☆☆ (3/5)</option>
+                                <option value="2">★★☆☆☆ (2/5)</option>
+                                <option value="1">★☆☆☆☆ (1/5)</option>
+                            </select>
+                        </div>
+                        <div class="campo-grupo">
+                            <label for="comentario">¿Qué te parecieron las clases?</label>
+                            <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
+                        </div>
+                        <button type="submit" id="btnEnviar" class="btn-enviar-resena">Publicar Reseña</button>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- VENTANA MODAL: INICIAR SESIÓN (Compatible con autocompletar de Google) -->
+    <div class="modal-overlay" id="modalLogin">
+        <div class="modal-box">
+            <button class="modal-cerrar" onclick="cerrarModales()">&times;</button>
+            <h3>Iniciar Sesión</h3>
+            <form id="formLogin">
+                <div class="campo-grupo">
+                    <label for="loginEmail">Correo electrónico</label>
+                    <input type="email" id="loginEmail" name="username" autocomplete="username" placeholder="tuemail@gmail.com" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-enviar-resena">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- VENTANA MODAL: REGISTRO (Compatible con autocompletar de Google) -->
+    <div class="modal-overlay" id="modalRegistro">
+        <div class="modal-box">
+            <button class="modal-cerrar" onclick="cerrarModales()">&times;</button>
+            <h3>Crear Cuenta</h3>
+            <form id="formRegistro">
+                <div class="campo-grupo">
+                    <label for="regNombre">Nombre</label>
+                    <input type="text" id="regNombre" placeholder="Ej: Santiago" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="regApellido">Apellido</label>
+                    <input type="text" id="regApellido" placeholder="Ej: Coppola" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="regEmail">Correo electrónico</label>
+                    <input type="email" id="regEmail" name="username" autocomplete="username" placeholder="tuemail@gmail.com" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" name="new-password" autocomplete="new-password" placeholder="Creá tu contraseña" required>
+                </div>
+                <button type="submit" class="btn-enviar-resena">Registrarme</button>
+            </form>
+        </div>
+    </div>
 
     <section class="final">
         <h2>¿Empezamos?</h2>
@@ -361,82 +668,5 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- SCRIPT SIN PIN (BORRADO DIRECTO) -->
-    <script>
-        const contenedor = document.getElementById('contenedorResenas');
-        const form = document.getElementById('formResena');
-
-        function obtenerResenas() {
-            const resenasGuardadas = localStorage.getItem('resenas_locales');
-            return resenasGuardadas ? JSON.parse(resenasGuardadas) : [];
-        }
-
-        function guardarResenas(lista) {
-            localStorage.setItem('resenas_locales', JSON.stringify(lista));
-        }
-
-        function renderizarResenas() {
-            const resenas = obtenerResenas();
-            contenedor.innerHTML = "";
-
-            if (resenas.length === 0) {
-                contenedor.innerHTML = "<p style='color: #666;'>Todavía no hay reseñas. ¡Sé el primero en dejar una!</p>";
-                return;
-            }
-
-            resenas.forEach((r, index) => {
-                const numEstrellas = parseInt(r.estrellas) || 5;
-                const estrellasTexto = "★".repeat(numEstrellas) + "☆".repeat(5 - numEstrellas);
-
-                const tarjeta = document.createElement('div');
-                tarjeta.classList.add('tarjeta-resena');
-                tarjeta.innerHTML = `
-                    <div class="tarjeta-header">
-                        <div>
-                            <div class="estrellas">${estrellasTexto}</div>
-                            <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
-                        </div>
-                        <button class="btn-eliminar" onclick="borrarResena(${index})">🗑️ Borrar</button>
-                    </div>
-                    <p class="comentario">${escapeHTML(r.comentario)}</p>
-                `;
-                contenedor.appendChild(tarjeta);
-            });
-        }
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const nombre = document.getElementById('nombre').value.trim();
-            const apellido = document.getElementById('apellido').value.trim();
-            const estrellas = document.getElementById('estrellas').value;
-            const comentario = document.getElementById('comentario').value.trim();
-
-            const nuevasResenas = obtenerResenas();
-            nuevasResenas.unshift({ nombre, apellido, estrellas, comentario });
-
-            guardarResenas(nuevasResenas);
-            form.reset();
-            renderizarResenas();
-            alert('¡Reseña publicada con éxito!');
-        });
-
-        function borrarResena(index) {
-            if (confirm("¿Estás seguro de que querés borrar esta reseña?")) {
-                const resenas = obtenerResenas();
-                resenas.splice(index, 1);
-                guardarResenas(resenas);
-                renderizarResenas();
-            }
-        }
-
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-
-        document.addEventListener('DOMContentLoaded', renderizarResenas);
-    </script>
 </body>
 </html>
