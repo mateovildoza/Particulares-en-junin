@@ -5,11 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mateo Vildoza - Tenis de Mesa</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- SDK de Firebase para guardar las reseñas en la nube -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ==========================================
+        // 1. REEMPLAZÁ ESTO CON TUS DATOS DE FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "tu-proyecto.firebaseapp.com",
+            projectId: "tu-proyecto",
+            storageBucket: "tu-proyecto.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const contenedor = document.getElementById('contenedorResenas');
+        const form = document.getElementById('formResena');
+
+        // Función para cargar las reseñas desde la nube al entrar a la página
+        async function cargarResenas() {
+            contenedor.innerHTML = "<p style='color: #666;'>Cargando opiniones...</p>";
+            try {
+                const q = query(collection(db, "resenas"), orderBy("fecha", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                contenedor.innerHTML = "";
+                
+                if(querySnapshot.empty) {
+                    contenedor.innerHTML = "<p style='color: #666;'>Todavía no hay reseñas. ¡Sé el primero en dejar una!</p>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const r = doc.data();
+                    const tarjeta = document.createElement('div');
+                    tarjeta.classList.add('tarjeta-resena');
+                    tarjeta.innerHTML = `
+                        <div class="estrellas">★★★★★</div>
+                        <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
+                        <span class="categoria">Usuario: @${escapeHTML(r.usuario)}</span>
+                        <p class="comentario">${escapeHTML(r.comentario)}</p>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                });
+            } catch (e) {
+                console.error("Error cargando reseñas: ", e);
+                contenedor.innerHTML = "<p style='color: #d9534f;'>Error al cargar las reseñas. Verificá tu configuración de Firebase.</p>";
+            }
+        }
+
+        // Función para enviar una nueva reseña a la base de datos
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnEnviar');
+            btn.textContent = "Enviando...";
+            btn.disabled = true;
+
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellido = document.getElementById('apellido').value.trim();
+            const usuario = document.getElementById('usuario').value.trim();
+            const comentario = document.getElementById('comentario').value.trim();
+
+            try {
+                await addDoc(collection(db, "resenas"), {
+                    nombre: nombre,
+                    apellido: apellido,
+                    usuario: usuario,
+                    comentario: comentario,
+                    fecha: serverTimestamp()
+                });
+
+                form.reset();
+                alert('¡Reseña publicada con éxito!');
+                cargarResenas(); // Recarga la lista para mostrar la nueva
+            } catch (e) {
+                console.error("Error al guardar: ", e);
+                alert('Hubo un error al publicar la reseña.');
+            } finally {
+                btn.textContent = "Publicar Reseña";
+                btn.disabled = false;
+            }
+        });
+
+        // Seguridad básica contra inyecciones de texto
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Ejecutar al cargar la página
+        window.addEventListener('DOMContentLoaded', cargarResenas);
+    </script>
+
     <style>
         :root {
             --naranja: #f05423;
-            --fondo-oscuro: #1c2128; /* Gris muy oscuro, casi negro */
-            --tarjeta-oscura: #2d333b; /* Gris un poco más claro para tarjetas */
+            --fondo-oscuro: #1c2128;
+            --tarjeta-oscura: #2d333b;
             --texto-gris: #adb5bd;
             --borde-gris: #3e444d;
         }
@@ -20,14 +121,35 @@
             background-color: white;
             color: #1a1a1a;
             -webkit-font-smoothing: antialiased;
+            scroll-behavior: smooth;
         }
+
+        /* --- NAV / MENÚ SUPERIOR --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(28, 33, 40, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 10%;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-logo { color: white; font-weight: 800; text-decoration: none; font-size: 1.1rem; }
+        .nav-links { display: flex; gap: 25px; list-style: none; margin: 0; padding: 0; align-items: center; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--naranja); }
 
         section { padding: 80px 10%; text-align: center; }
 
         /* --- 1. HERO --- */
         .hero {
             height: 100vh;
-            /* Degradado oscuro sobre la foto de fondo */
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
                         url('fotofondonew.jpeg') no-repeat center center/cover;
             display: flex;
@@ -67,7 +189,7 @@
         }
         .btn-whatsapp:hover { transform: scale(1.05); }
 
-        /* --- 2. BIOGRAFÍA (IMAGEN DERECHA) --- */
+        /* --- 2. BIOGRAFÍA --- */
         .bio { display: flex; align-items: center; gap: 80px; text-align: left; background-color: white;}
         .bio-content { flex: 1; }
         .bio-content h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; }
@@ -92,7 +214,7 @@
         .box-extra { border: 1px solid var(--borde-gris); max-width: 775px; margin: 30px auto; border-radius: 15px; padding: 25px; display: flex; gap: 20px; text-align: left; color: var(--texto-gris); font-size: 0.95rem; line-height: 1.6;}
         .box-extra span { color: var(--naranja); font-size: 1.5rem; }
 
-        /* --- 5. CÓMO TRABAJO (IMAGEN IZQUIERDA) --- */
+        /* --- 5. CÓMO TRABAJO --- */
         .como-trabajo { display: flex; align-items: center; gap: 80px; text-align: left; background: white; }
 
         /* --- 6. ANÁLISIS --- */
@@ -108,7 +230,77 @@
         .donde h2, .horarios h2 { font-size: 2.5rem; font-weight: 800; margin: 15px 0; }
         .donde p, .horarios p { font-size: 1.1rem; color: #555; max-width: 700px; margin: 0 auto; }
 
-        /* --- 8. EMPEZAMOS (LA SECCIÓN QUE FALTABA) --- */
+        /* --- SECCIÓN DE RESEÑAS --- */
+        .seccion-resenas { background-color: #f4f6f8; padding: 90px 10%; text-align: left; }
+        .seccion-resenas h2 { text-align: center; font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; }
+        .resenas-sub { text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 50px; }
+
+        .resenas-contenedor {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+
+        .lista-resenas {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .tarjeta-resena {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--naranja);
+        }
+        .tarjeta-resena .autor { font-weight: 700; font-size: 1.1rem; color: #222; }
+        .tarjeta-resena .categoria { font-size: 0.8rem; color: var(--naranja); font-weight: 600; margin-bottom: 8px; display: block; }
+        .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 0; }
+        .estrellas { color: #f59e0b; margin-bottom: 5px; font-size: 0.9rem; }
+
+        .form-resena {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .form-resena h3 { margin-top: 0; font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; }
+        .campo-grupo { margin-bottom: 20px; }
+        .campo-grupo label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: #333; }
+        .campo-grupo input, .campo-grupo textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+        .campo-grupo input:focus, .campo-grupo textarea:focus {
+            outline: none;
+            border-color: var(--naranja);
+            box-shadow: 0 0 0 3px rgba(240, 84, 35, 0.1);
+        }
+        .btn-enviar-resena {
+            background-color: var(--naranja);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-enviar-resena:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* --- 8. EMPEZAMOS --- */
         .final { background-color: var(--fondo-oscuro); color: white; padding: 120px 10%; text-align: center; }
         .final h2 { font-size: 4rem; font-weight: 900; margin-bottom: 20px; }
         .final p { font-size: 1.2rem; opacity: 0.7; margin-bottom: 40px; }
@@ -116,18 +308,31 @@
         /* --- 9. FOOTER --- */
         .footer { background-color: #2a2d31; color: #6c757d; padding: 30px 10%; font-size: 0.8rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 
-        /* Responsive para celulares */
         @media (max-width: 1000px) {
-            .bio, .como-trabajo { flex-direction: column; text-align: center; gap: 40px;}
+            .bio, .como-trabajo, .resenas-contenedor { flex-direction: column; text-align: center; gap: 40px;}
+            .resenas-contenedor { grid-template-columns: 1fr; text-align: left; }
             .bio-img { width: 100%; max-width: 450px;}
-            .como-trabajo-img { width: 100%; max-width: 450px;}
             .grid-trabajo { grid-template-columns: 1fr; width: 100%; }
             .hero h1 { font-size: 2.8rem; }
             .banner-naranja h2 { font-size: 2.8rem; }
+            .navbar { padding: 15px 5%; }
+            .nav-links { display: none; }
         }
     </style>
 </head>
 <body>
+
+    <nav class="navbar">
+        <a href="#" class="nav-logo">Mateo Vildoza</a>
+        <ul class="nav-links">
+            <li><a href="#clases">Clases</a></li>
+            <li><a href="#trabajamos">Qué vemos</a></li>
+            <li><a href="#metodo">Cómo trabajo</a></li>
+            <li><a href="#donde">Ubicación</a></li>
+            <li><a href="#resenas" style="color: var(--naranja);">Reseñas ⭐</a></li>
+            <li><a href="https://wa.me/5492364543539" class="btn-whatsapp" style="padding: 8px 18px; font-size: 0.85rem;">Contacto</a></li>
+        </ul>
+    </nav>
 
     <section class="hero">
         <div class="hero-tag">Mateo Vildoza</div>
@@ -145,13 +350,13 @@
         <img src="comomellamo2.jpeg" class="bio-img" alt="Mateo Vildoza">
     </section>
 
-    <section class="seccion-blanca">
+    <section id="clases" class="seccion-blanca">
         <span class="icon-naranja">🎯</span>
         <h2>Las clases</h2>
         <p>Las clases son individuales, nada de grupos. Me enfoco en lo que vos necesitás mejorar. Si sos principiante o si ya jugás hace tiempo, da igual — lo que importa es avanzar desde donde estás.</p>
     </section>
 
-    <section class="trabajamos">
+    <section id="trabajamos" class="trabajamos">
         <h2>Qué vemos en clase</h2>
         <p class="sub-trabajo">No hay una lista fija. Trabajo lo que cada jugador necesita. Si algo ya te sale bien, lo pulimos</p>
         
@@ -169,7 +374,7 @@
         <p style="color: #666; font-style: italic; margin-top: 20px;">(No trabajamos preparación física)</p>
     </section>
 
-    <section class="como-trabajo">
+    <section id="metodo" class="como-trabajo">
         <img src="foto2.jpeg" class="bio-img" alt="Entrenamiento">
         <div class="bio-content">
             <span style="font-size: 2.5rem; color: var(--naranja);">⚡</span>
@@ -187,7 +392,7 @@
         </div>
     </section>
 
-    <section class="donde">
+    <section id="donde" class="donde">
         <span class="icon-naranja" style="font-size: 1.5rem;">📍</span>
         <h2>Dónde son las clases</h2>
         <p>Las clases las doy en un espacio propio, tranquilo y sin distracciones. Está pensado para entrenar con atención, sin apuros y sin que nadie moleste.</p>
@@ -197,6 +402,43 @@
         <span style="font-size: 1.5rem; display: block; margin-bottom: 10px;">🕒</span>
         <h2>Horarios</h2>
         <p>Los horarios no son fijos. Vos me proponés el día y el horario que mejor te queda, y yo te confirmo según disponibilidad.</p>
+    </section>
+
+    <!-- SECCIÓN DE RESEÑAS CONECTADA A LA NUBE -->
+    <section id="resenas" class="seccion-resenas">
+        <h2>Opiniones de Alumnos</h2>
+        <p class="resenas-sub">Conocé la experiencia de quienes ya entrenaron y mejoraron su nivel.</p>
+
+        <div class="resenas-contenedor">
+            <!-- Lista donde se cargan automáticamente todas las reseñas guardadas -->
+            <div class="lista-resenas" id="contenedorResenas">
+                <!-- Se cargan vía JavaScript -->
+            </div>
+
+            <!-- Formulario con Nombre, Apellido y Usuario -->
+            <div class="form-resena">
+                <h3>Dejanos tu reseña</h3>
+                <form id="formResena">
+                    <div class="campo-grupo">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" placeholder="Ej: Santiago" required>
+                    </div>
+                    <div class="campo-grupo">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" placeholder="Ej: Coppola" required>
+                    </div>
+                    <div class="campo-grupo">
+                        <label for="usuario">Nombre de usuario (ej: apodo o red social)</label>
+                        <input type="text" id="usuario" placeholder="Ej: santi_tt" required>
+                    </div>
+                    <div class="campo-grupo">
+                        <label for="comentario">¿Qué te parecieron las clases?</label>
+                        <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
+                    </div>
+                    <button type="submit" id="btnEnviar" class="btn-enviar-resena">Publicar Reseña</button>
+                </form>
+            </div>
+        </div>
     </section>
 
     <section class="final">
