@@ -299,7 +299,7 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
-        /* Pantalla Completa de Perfil Propio o Ajeno */
+        /* Pantalla Completa de Perfil */
         #vistaPerfil {
             display: none;
             padding: 140px 10% 80px 10%;
@@ -539,13 +539,13 @@
         </section>
     </div>
 
-    <!-- VISTA DE PERFIL EN PANTALLA COMPLETA (Propio o de Alumnos) -->
+    <!-- VISTA DE PERFIL EN PANTALLA COMPLETA -->
     <div id="vistaPerfil">
         <div class="perfil-header-principal">
             <div>
                 <h2 style="font-size: 2.5rem; margin: 0 0 5px 0; font-weight: 900;" id="perfilTituloVista">PERFIL DE ALUMNO</h2>
                 <p style="color: #666; font-size: 1.1rem; margin: 0;" id="perfilNombreRol">👤 Nombre: Cargando...</p>
-                <p style="color: #666; font-size: 1.05rem; margin: 5px 0 0 0;" id="perfilNivelUsuario">🎯 Nivel: Cargando...</p>
+                <p style="color: #666; font-size: 1.05rem; margin: 5px 0 0 0;" id="perfilNivelEdad">🎯 Nivel: Cargando...</p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="display: none; padding: 10px 16px;">✏️ Editar mis datos</button>
@@ -567,10 +567,15 @@
 
             <div class="perfil-card-consejo">
                 <div>
-                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">💡 RECOMENDACIÓN / OBJETIVOS</h3>
-                    <p style="margin: 0; font-size: 1.05rem; color: #555; line-height: 1.5;" id="perfilRecomendacion">Cargando objetivo actual...</p>
+                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 EQUIPAMIENTO (PALA)</h3>
+                    <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="perfilMadera"><strong>Madera:</strong> Cargando...</p>
+                    <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="perfilGomaDrive"><strong>Goma Drive:</strong> Cargando...</p>
+                    <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="perfilGomaReves"><strong>Goma Revés:</strong> Cargando...</p>
+                    
+                    <h3 style="margin: 15px 0 5px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
+                    <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4;" id="perfilRecomendacion">Cargando objetivo...</p>
                 </div>
-                <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; margin-top: 25px; display: block; padding: 14px;">Reservar Clase con Mateo</a>
+                <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; margin-top: 20px; display: block; padding: 12px;">Reservar Clase con Mateo</a>
             </div>
         </div>
 
@@ -593,19 +598,31 @@
         </div>
     </div>
 
-    <!-- Modal Editar Perfil -->
+    <!-- Modal Editar Perfil (Sin campo de objetivos) -->
     <div class="modal-overlay" id="modalEditarPerfil">
         <div class="modal-box">
             <button class="modal-cerrar" id="cerrarModalEditar">&times;</button>
             <h3>Editar Mis Datos</h3>
             <form id="formEditarPerfil">
                 <div class="campo-grupo">
+                    <label for="editEdad">Edad</label>
+                    <input type="number" id="editEdad" placeholder="Ej: 16" required>
+                </div>
+                <div class="campo-grupo">
                     <label for="editNivel">Nivel o Categoría (TMT / FETEMBA)</label>
                     <input type="text" id="editNivel" placeholder="Ej: Intermedio - Cat. 3ra TMT" required>
                 </div>
                 <div class="campo-grupo">
-                    <label for="editRecomendacion">Tu objetivo o enfoque actual</label>
-                    <input type="text" id="editRecomendacion" placeholder="Ej: Mejorar recepción y revés" required>
+                    <label for="editMadera">Madera</label>
+                    <input type="text" id="editMadera" placeholder="Ej: Nittaku Acoustic Carbon" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="editGomaDrive">Goma de Drive</label>
+                    <input type="text" id="editGomaDrive" placeholder="Ej: Nittaku Genextion V2C" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="editGomaReves">Goma de Revés</label>
+                    <input type="text" id="editGomaReves" placeholder="Ej: Victas Ventus Extra" required>
                 </div>
                 <button type="submit" class="btn-enviar-resena">Guardar Cambios</button>
             </form>
@@ -646,8 +663,24 @@
                     <input type="text" id="regApellido" placeholder="Ej: Coppola" required>
                 </div>
                 <div class="campo-grupo">
+                    <label for="regEdad">Edad</label>
+                    <input type="number" id="regEdad" placeholder="Ej: 16" required>
+                </div>
+                <div class="campo-grupo">
                     <label for="regNivel">Nivel o Categoría (TMT / FETEMBA)</label>
                     <input type="text" id="regNivel" placeholder="Ej: Intermedio - Cat. 3ra TMT" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="regMadera">Madera</label>
+                    <input type="text" id="regMadera" placeholder="Ej: Nittaku Acoustic Carbon" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="regGomaDrive">Goma de Drive</label>
+                    <input type="text" id="regGomaDrive" placeholder="Ej: Nittaku Genextion V2C" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="regGomaReves">Goma de Revés</label>
+                    <input type="text" id="regGomaReves" placeholder="Ej: Victas Ventus Extra" required>
                 </div>
                 <div class="campo-grupo">
                     <label for="regEmail">Correo electrónico</label>
@@ -672,7 +705,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase, Edición de Perfil y Vistas -->
+    <!-- Lógica de Firebase y Perfiles -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -745,35 +778,51 @@
 
             let horas = 0;
             let nivel = "Sin especificar";
-            let recomendacion = "Mejorar desplazamiento y postura en servicio.";
+            let edad = "--";
+            let madera = "Sin especificar";
+            let gomaDrive = "Sin especificar";
+            let gomaReves = "Sin especificar";
+            let recomendacion = "Pendiente de actualización por el entrenador.";
 
             if (snapUsuario.exists()) {
                 const datos = snapUsuario.data();
                 horas = datos.horasAcumuladas || 0;
                 nivel = datos.nivel || nivel;
+                edad = datos.edad || edad;
+                madera = datos.madera || madera;
+                gomaDrive = datos.gomaDrive || gomaDrive;
+                gomaReves = datos.gomaReves || gomaReves;
                 recomendacion = datos.recomendacion || recomendacion;
             } else if (esMiPerfil) {
-                // Si es usuario viejo y no tiene documento creado, se lo creamos por defecto
                 await setDoc(refUsuario, {
                     horasAcumuladas: 0,
                     nivel: "Intermedio",
+                    edad: "16",
+                    madera: "Genérica",
+                    gomaDrive: "Genérica",
+                    gomaReves: "Genérica",
                     recomendacion: "Mejorar desplazamiento y postura en servicio."
                 }, { merge: true });
             }
 
             document.getElementById('perfilTituloVista').textContent = esMiPerfil ? "MI PERFIL DE ALUMNO" : "PERFIL DE ALUMNO";
             document.getElementById('perfilNombreRol').innerHTML = `👤 Nombre: ${escapeHTML(esMiPerfil ? (usuarioActual.displayName || "Alumno") : nombreFallback)}`;
-            document.getElementById('perfilNivelUsuario').innerHTML = `🎯 Nivel / Categoría: ${escapeHTML(nivel)}`;
-            document.getElementById('perfilRecomendacion').textContent = `Objetivo actual: ${recomendacion}`;
+            document.getElementById('perfilNivelEdad').innerHTML = `🎯 Nivel: ${escapeHTML(nivel)} &nbsp;|&nbsp; 🎂 Edad: ${escapeHTML(String(edad))} años`;
+            
+            document.getElementById('perfilMadera').innerHTML = `<strong>Madera:</strong> ${escapeHTML(madera)}`;
+            document.getElementById('perfilGomaDrive').innerHTML = `<strong>Goma Drive:</strong> ${escapeHTML(gomaDrive)}`;
+            document.getElementById('perfilGomaReves').innerHTML = `<strong>Goma Revés:</strong> ${escapeHTML(gomaReves)}`;
+            document.getElementById('perfilRecomendacion').textContent = recomendacion;
 
-            // Mostrar u ocultar el botón de editar según sea su perfil propio
             const btnEditar = document.getElementById('btnAbrirEditarPerfil');
             btnEditar.style.display = esMiPerfil ? 'block' : 'none';
 
-            // Rellenar inputs del modal de edición con los datos actuales
             if (esMiPerfil) {
+                document.getElementById('editEdad').value = edad !== "--" ? edad : "";
                 document.getElementById('editNivel').value = nivel !== "Sin especificar" ? nivel : "";
-                document.getElementById('editRecomendacion').value = recomendacion;
+                document.getElementById('editMadera').value = madera !== "Sin especificar" ? madera : "";
+                document.getElementById('editGomaDrive').value = gomaDrive !== "Sin especificar" ? gomaDrive : "";
+                document.getElementById('editGomaReves').value = gomaReves !== "Sin especificar" ? gomaReves : "";
             }
 
             const cajaProgreso = document.getElementById('cajaProgresoHoras');
@@ -808,25 +857,31 @@
             }
         }
 
-        // Guardar cambios de edición de perfil
+        // Guardar cambios de edición (Sin dejar modificar los objetivos)
         document.getElementById('formEditarPerfil').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!usuarioActual) return;
 
+            const nuevaEdad = document.getElementById('editEdad').value.trim();
             const nuevoNivel = document.getElementById('editNivel').value.trim();
-            const nuevaRecomendacion = document.getElementById('editRecomendacion').value.trim();
+            const nuevaMadera = document.getElementById('editMadera').value.trim();
+            const nuevaGomaDrive = document.getElementById('editGomaDrive').value.trim();
+            const nuevaGomaReves = document.getElementById('editGomaReves').value.trim();
 
             try {
                 const refUsuario = doc(db, "usuarios", usuarioActual.uid);
                 await updateDoc(refUsuario, {
+                    edad: nuevaEdad,
                     nivel: nuevoNivel,
-                    recomendacion: nuevaRecomendacion
+                    madera: nuevaMadera,
+                    gomaDrive: nuevaGomaDrive,
+                    gomaReves: nuevaGomaReves
                 });
 
                 cerrarModales();
-                alert("¡Perfil actualizado con éxito!");
-                mostrarMiPerfil(); // Recargar la vista de perfil actualizada
-                cargarResenas();   // Recargar reseñas para actualizar los badges de nivel
+                alert("¡Datos actualizados con éxito!");
+                mostrarMiPerfil();
+                cargarResenas();
             } catch(error) {
                 alert("Error al actualizar el perfil: " + error.message);
             }
@@ -1055,7 +1110,11 @@
             e.preventDefault();
             const nombre = document.getElementById('regNombre').value.trim();
             const apellido = document.getElementById('regApellido').value.trim();
+            const edad = document.getElementById('regEdad').value.trim();
             const nivel = document.getElementById('regNivel').value.trim();
+            const madera = document.getElementById('regMadera').value.trim();
+            const gomaDrive = document.getElementById('regGomaDrive').value.trim();
+            const gomaReves = document.getElementById('regGomaReves').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
 
@@ -1067,7 +1126,11 @@
 
                 await setDoc(doc(db, "usuarios", userCredential.user.uid), {
                     horasAcumuladas: 0,
+                    edad: edad,
                     nivel: nivel,
+                    madera: madera,
+                    gomaDrive: gomaDrive,
+                    gomaReves: gomaReves,
                     recomendacion: "Mejorar desplazamiento y postura en servicio."
                 });
 
