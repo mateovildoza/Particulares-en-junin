@@ -751,7 +751,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase completa y filtrado correcto de horas pagadas -->
+    <!-- Lógica de Firebase completa y funcional -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -916,7 +916,7 @@
                 historialClases = nuevoSnap.data().historialClases;
             }
 
-            // Excluimos del cálculo de horas acumuladas aquellas clases que digan "(Gratis)" o sean bonificadas
+            // Excluimos del cálculo de horas pagadas aquellas clases que indiquen ser gratis o bonificadas
             let horasCalculadas = 0;
             historialClases.forEach(clase => {
                 const estadoTexto = (clase.estado || "").toLowerCase();
