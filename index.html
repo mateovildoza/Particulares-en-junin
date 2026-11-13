@@ -370,7 +370,7 @@
         }
         .ficha-dato-item strong { color: #111; }
 
-        /* Contenedor Propio (Dos columnas invertidas: Horas a la izquierda, Material a la derecha) */
+        /* Contenedor Propio (Dos columnas invertidas) */
         .perfil-propio-layout {
             max-width: 1100px;
             margin: 0 auto;
@@ -458,7 +458,7 @@
 
     <nav class="navbar">
         <a class="nav-logo" id="logoInicio">Mateo Vildoza</a>
-        <div class="nav-right">
+        <div class="nav-right" id="navRightContainer">
             <ul class="nav-links" id="navLinksMenu">
                 <li><a href="#clases">Clases</a></li>
                 <li><a href="#trabajamos">Qué vemos</a></li>
@@ -529,7 +529,7 @@
             <div class="banner-naranja">
                 <span class="tag-opcional">SERVICIO OPCIONAL</span>
                 <h2>Análisis personalizado de juego</h2>
-                <p>Além de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
+                <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
             </div>
         </section>
 
@@ -620,7 +620,7 @@
             </div>
         </div>
 
-        <!-- MI PERFIL (Dos columnas: Izquierda Horas Grandes, Derecha Equipamiento y Recomendación) -->
+        <!-- MI PERFIL -->
         <div id="contenedorMiPerfil" style="display: none;" class="perfil-propio-layout">
             <div class="perfil-header-principal">
                 <div>
@@ -791,7 +791,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Renderizado Condicional -->
+    <!-- Lógica de Firebase y Ocultamiento Dinámico de la Navbar -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -833,6 +833,30 @@
             document.getElementById('vistaPerfil').style.display = 'none';
             document.getElementById('vistaPrincipal').style.display = 'block';
             document.getElementById('seccionFinal').style.display = 'block';
+            
+            // Restaurar la barra de navegación completa cuando volvemos al inicio
+            document.getElementById('navLinksMenu').style.display = 'flex';
+            const authBar = document.getElementById('authBar');
+            if (usuarioActual) {
+                authBar.innerHTML = `
+                    <span class="user-welcome">Hola, <strong>${escapeHTML(usuarioActual.displayName || usuarioActual.email)}</strong></span>
+                    <button id="btnMiPerfil" class="btn-auth-secundario">👤 Mi Perfil</button>
+                    <button id="btnLogout" class="btn-auth-secundario">Cerrar Sesión</button>
+                `;
+                document.getElementById('btnMiPerfil').addEventListener('click', mostrarMiPerfil);
+                document.getElementById('btnLogout').addEventListener('click', () => {
+                    signOut(auth);
+                    mostrarVistaPrincipal();
+                });
+            } else {
+                authBar.innerHTML = `
+                    <button id="btnAbrirLogin" class="btn-auth-primario">Iniciar Sesión</button>
+                    <button id="btnAbrirRegistro" class="btn-auth-secundario">Registrarse</button>
+                `;
+                document.getElementById('btnAbrirLogin').addEventListener('click', () => abrirModal('modalLogin'));
+                document.getElementById('btnAbrirRegistro').addEventListener('click', () => abrirModal('modalRegistro'));
+            }
+
             window.scrollTo(0, 0);
         }
 
@@ -854,6 +878,12 @@
             document.getElementById('seccionFinal').style.display = 'none';
             document.getElementById('vistaPerfil').style.display = 'block';
             window.scrollTo(0, 0);
+
+            // Ocultar las secciones del menú superior y mostrar solo el botón de regreso rápido
+            document.getElementById('navLinksMenu').style.display = 'none';
+            document.getElementById('authBar').innerHTML = `
+                <button class="btn-auth-primario" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
+            `;
 
             const refUsuario = doc(db, "usuarios", uidTarget);
             const snapUsuario = await getDoc(refUsuario);
