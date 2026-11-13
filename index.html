@@ -299,7 +299,7 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
-        /* Pantalla de Perfil */
+        /* Pantalla de Perfil con fondo continuo para evitar destellos blancos */
         #vistaPerfil {
             display: none;
             padding: 140px 10% 80px 10%;
@@ -512,7 +512,7 @@
             <div class="banner-naranja">
                 <span class="tag-opcional">SERVICIO OPCIONAL</span>
                 <h2>Análisis personalizado de juego</h2>
-                <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabalhar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
+                <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
             </div>
         </section>
 
@@ -573,17 +573,17 @@
         <div id="contenedorPerfilAjeno" style="display: none;">
             <div class="ficha-contenedor">
                 <div class="ficha-header-bar">
-                    <h2 id="fichaNombre">Nombre del Jugador</h2>
-                    <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Nivel / Categoría</p>
+                    <h2 id="fichaNombre">Cargando perfil...</h2>
+                    <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Espere un momento</p>
                 </div>
 
                 <div class="ficha-body">
                     <div class="ficha-seccion-titulo">Datos Deportivos</div>
                     <div class="ficha-grid-datos">
-                        <div class="ficha-dato-item"><strong>Madera:</strong> <span id="valMadera">-</span></div>
-                        <div class="ficha-dato-item"><strong>Goma Drive:</strong> <span id="valGomaDrive">-</span></div>
-                        <div class="ficha-dato-item"><strong>Goma Revés:</strong> <span id="valGomaReves">-</span></div>
-                        <div class="ficha-dato-item"><strong>Nivel / Categoría:</strong> <span id="valNivel">-</span></div>
+                        <div class="ficha-dato-item"><strong>Madera:</strong> <span id="valMadera">Cargando...</span></div>
+                        <div class="ficha-dato-item"><strong>Goma Drive:</strong> <span id="valGomaDrive">Cargando...</span></div>
+                        <div class="ficha-dato-item"><strong>Goma Revés:</strong> <span id="valGomaReves">Cargando...</span></div>
+                        <div class="ficha-dato-item"><strong>Nivel / Categoría:</strong> <span id="valNivel">Cargando...</span></div>
                     </div>
 
                     <div class="ficha-seccion-titulo">Datos Personales</div>
@@ -593,7 +593,7 @@
                     </div>
 
                     <div class="ficha-seccion-titulo">Objetivo / Enfoque Actual</div>
-                    <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando objetivo...</p>
+                    <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando información...</p>
                 </div>
             </div>
         </div>
@@ -630,9 +630,9 @@
                 <div class="perfil-card-blanca" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 EQUIPAMIENTO Y OBJETIVO</h3>
-                        <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioMadera"><strong>Madera:</strong> --</p>
-                        <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioGomaDrive"><strong>Goma Drive:</strong> --</p>
-                        <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> --</p>
+                        <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioMadera"><strong>Madera:</strong> Cargando...</p>
+                        <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioGomaDrive"><strong>Goma Drive:</strong> Cargando...</p>
+                        <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> Cargando...</p>
                         
                         <h3 style="margin: 15px 0 6px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
                         <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4;" id="mioRecomendacion">Cargando objetivo...</p>
@@ -768,7 +768,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Limpieza Instantánea de Perfiles -->
+    <!-- Lógica de Firebase optimizada para transiciones fluidas -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -807,7 +807,6 @@
         });
 
         window.mostrarVistaPrincipal = function() {
-            // Ocultar por completo los contenedores de perfil para evitar solapamientos
             document.getElementById('contenedorMiPerfil').style.display = 'none';
             document.getElementById('contenedorPerfilAjeno').style.display = 'none';
             document.getElementById('vistaPerfil').style.display = 'none';
@@ -815,7 +814,6 @@
             document.getElementById('vistaPrincipal').style.display = 'block';
             document.getElementById('seccionFinal').style.display = 'block';
             
-            // Restaurar la barra de navegación completa al volver al inicio
             document.getElementById('navLinksMenu').style.display = 'flex';
             const authBar = document.getElementById('authBar');
             if (usuarioActual) {
@@ -855,20 +853,31 @@
         }
 
         async function cargarDatosPerfil(uidTarget, esMiPerfil, nombreFallback = "Alumno") {
-            // Ocultar vista principal y resetear contenedores antes de cargar el nuevo perfil
+            // Mostrar la vista de perfil inmediatamente con textos de carga limpios
             document.getElementById('vistaPrincipal').style.display = 'none';
             document.getElementById('seccionFinal').style.display = 'none';
-            document.getElementById('contenedorMiPerfil').style.display = 'none';
-            document.getElementById('contenedorPerfilAjeno').style.display = 'none';
-            
+            document.getElementById('contenedorMiPerfil').style.display = esMiPerfil ? 'block' : 'none';
+            document.getElementById('contenedorPerfilAjeno').style.display = esMiPerfil ? 'none' : 'block';
             document.getElementById('vistaPerfil').style.display = 'block';
             window.scrollTo(0, 0);
 
-            // Ocultar menú superior y dejar solo el botón de volver al inicio en la navbar
+            // Preparar navbar simplificada
             document.getElementById('navLinksMenu').style.display = 'none';
             document.getElementById('authBar').innerHTML = `
                 <button class="btn-auth-primario" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
             `;
+
+            // Si es perfil ajeno, mostrar el nombre temporal de inmediato
+            if (!esMiPerfil) {
+                document.getElementById('fichaNombre').textContent = nombreFallback;
+                document.getElementById('fichaNivelSub').textContent = "Cargando categoría...";
+                document.getElementById('valMadera').textContent = "Cargando...";
+                document.getElementById('valGomaDrive').textContent = "Cargando...";
+                document.getElementById('valGomaReves').textContent = "Cargando...";
+                document.getElementById('valNivel').textContent = "Cargando...";
+                document.getElementById('valEdad').textContent = "-";
+                document.getElementById('fichaRecomendacion').textContent = "Cargando información...";
+            }
 
             const refUsuario = doc(db, "usuarios", uidTarget);
             const snapUsuario = await getDoc(refUsuario);
@@ -913,13 +922,7 @@
                 horasCalculadas += parseFloat(clase.duracion) || 0;
             });
 
-            const contenedorAjeno = document.getElementById('contenedorPerfilAjeno');
-            const contenedorPropio = document.getElementById('contenedorMiPerfil');
-
             if (esMiPerfil) {
-                contenedorAjeno.style.display = 'none';
-                contenedorPropio.style.display = 'block';
-
                 document.getElementById('miPerfilSub').innerHTML = `👤 Nombre: <strong>${escapeHTML(usuarioActual.displayName || "Alumno")}</strong>`;
                 document.getElementById('miPerfilNivelEdad').innerHTML = `🎯 Nivel: ${escapeHTML(nivel)} &nbsp;|&nbsp; 🎂 Edad: ${escapeHTML(String(edad))} años`;
 
@@ -958,9 +961,6 @@
                     });
                 }
             } else {
-                contenedorPropio.style.display = 'none';
-                contenedorAjeno.style.display = 'block';
-
                 document.getElementById('fichaNombre').textContent = nombreFallback;
                 document.getElementById('fichaNivelSub').textContent = `Categoría / Nivel: ${escapeHTML(nivel)}`;
                 document.getElementById('valMadera').textContent = madera;
