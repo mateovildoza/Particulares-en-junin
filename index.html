@@ -323,25 +323,8 @@
             background: linear-gradient(135deg, var(--fondo-oscuro), #2d333b);
             color: white;
             padding: 25px 35px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
         .ficha-header-bar h2 { margin: 0; font-size: 1.8rem; font-weight: 800; }
-        .btn-volver-inicio {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: 0.2s;
-        }
-        .btn-volver-inicio:hover { background: var(--naranja); border-color: var(--naranja); }
 
         .ficha-body {
             padding: 35px;
@@ -590,13 +573,8 @@
         <div id="contenedorPerfilAjeno" style="display: none;">
             <div class="ficha-contenedor">
                 <div class="ficha-header-bar">
-                    <div>
-                        <h2 id="fichaNombre">Nombre del Jugador</h2>
-                        <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Nivel / Categoría</p>
-                    </div>
-                    <div>
-                        <button class="btn-volver-inicio" onclick="mostrarVistaPrincipal()">← Volver</button>
-                    </div>
+                    <h2 id="fichaNombre">Nombre del Jugador</h2>
+                    <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Nivel / Categoría</p>
                 </div>
 
                 <div class="ficha-body">
@@ -790,7 +768,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Limpieza de Botones -->
+    <!-- Lógica de Firebase y Limpieza Definitiva -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -878,7 +856,7 @@
             document.getElementById('vistaPerfil').style.display = 'block';
             window.scrollTo(0, 0);
 
-            // Ocultar menú superior y dejar solo el botón de volver al inicio
+            // Ocultar menú superior y dejar solo el botón de volver al inicio en la navbar
             document.getElementById('navLinksMenu').style.display = 'none';
             document.getElementById('authBar').innerHTML = `
                 <button class="btn-auth-primario" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
