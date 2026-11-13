@@ -370,7 +370,7 @@
         }
         .ficha-dato-item strong { color: #111; }
 
-        /* Contenedor Propio (Dos columnas invertidas) */
+        /* Contenedor Propio (Dos columnas) */
         .perfil-propio-layout {
             max-width: 1100px;
             margin: 0 auto;
@@ -628,9 +628,8 @@
                     <p style="color: #666; font-size: 1.05rem; margin: 0;" id="miPerfilSub">👤 Nombre: Cargando...</p>
                     <p style="color: #666; font-size: 0.95rem; margin: 3px 0 0 0;" id="miPerfilNivelEdad">🎯 Nivel: Cargando...</p>
                 </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <div>
                     <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="padding: 10px 16px;">✏️ Editar mis datos</button>
-                    <button class="btn-volver-inicio" style="background: var(--fondo-oscuro); color: white; border: none; padding: 10px 18px;" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
                 </div>
             </div>
 
@@ -791,7 +790,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Ocultamiento Dinámico de la Navbar -->
+    <!-- Lógica de Firebase y Limpieza de Botones -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -834,7 +833,7 @@
             document.getElementById('vistaPrincipal').style.display = 'block';
             document.getElementById('seccionFinal').style.display = 'block';
             
-            // Restaurar la barra de navegación completa cuando volvemos al inicio
+            // Restaurar la barra de navegación completa al volver al inicio
             document.getElementById('navLinksMenu').style.display = 'flex';
             const authBar = document.getElementById('authBar');
             if (usuarioActual) {
@@ -879,7 +878,7 @@
             document.getElementById('vistaPerfil').style.display = 'block';
             window.scrollTo(0, 0);
 
-            // Ocultar las secciones del menú superior y mostrar solo el botón de regreso rápido
+            // Ocultar menú superior y dejar solo el botón de volver al inicio
             document.getElementById('navLinksMenu').style.display = 'none';
             document.getElementById('authBar').innerHTML = `
                 <button class="btn-auth-primario" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
