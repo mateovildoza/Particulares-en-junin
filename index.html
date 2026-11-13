@@ -299,7 +299,6 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
-        /* Pantalla de Perfil */
         #vistaPerfil {
             display: none;
             padding: 140px 10% 80px 10%;
@@ -752,7 +751,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase con actualización fluida y sin recargas de lista -->
+    <!-- Lógica de Firebase completa y funcional -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -773,7 +772,7 @@
         const db = getFirestore(app);
 
         let usuarioActual = null;
-        let resenasCargadasPorPrimera Vez = false;
+        let resenasCargadasPorPrimeraVez = false;
 
         function abrirModal(id) {
             document.getElementById(id).style.display = 'flex';
@@ -800,10 +799,17 @@
             document.getElementById('seccionFinal').style.display = 'block';
             
             document.getElementById('navLinksMenu').style.display = 'flex';
+            actualizarBarraAuth(usuarioActual);
+
+            window.scrollTo(0, 0);
+        }
+
+        function actualizarBarraAuth(user) {
             const authBar = document.getElementById('authBar');
-            if (usuarioActual) {
+            if (user) {
+                const nombreMostrar = user.displayName || user.email;
                 authBar.innerHTML = `
-                    <span class="user-welcome">Hola, <strong>${escapeHTML(usuarioActual.displayName || usuarioActual.email)}</strong></span>
+                    <span class="user-welcome">Hola, <strong>${escapeHTML(nombreMostrar)}</strong></span>
                     <button id="btnMiPerfil" class="btn-auth-secundario">👤 Mi Perfil</button>
                     <button id="btnLogout" class="btn-auth-secundario">Cerrar Sesión</button>
                 `;
@@ -812,16 +818,27 @@
                     signOut(auth);
                     mostrarVistaPrincipal();
                 });
+                document.getElementById('bloqueFormResena').style.display = 'block';
+                document.getElementById('bloqueLoginRequerido').style.display = 'none';
             } else {
                 authBar.innerHTML = `
-                    <button id="btnAbrirLogin" class="btn-auth-primario">Iniciar Sesión</button>
-                    <button id="btnAbrirRegistro" class="btn-auth-secundario">Registrarse</button>
+                    <button id="btnAbrirLoginNav" class="btn-auth-primario">Iniciar Sesión</button>
+                    <button id="btnAbrirRegistroNav" class="btn-auth-secundario">Registrarse</button>
                 `;
-                document.getElementById('btnAbrirLogin').addEventListener('click', () => abrirModal('modalLogin'));
-                document.getElementById('btnAbrirRegistro').addEventListener('click', () => abrirModal('modalRegistro'));
+                asignarEventosBotonesAuth();
+                document.getElementById('bloqueFormResena').style.display = 'none';
+                document.getElementById('bloqueLoginRequerido').style.display = 'block';
             }
+        }
 
-            window.scrollTo(0, 0);
+        function asignarEventosBotonesAuth() {
+            const btnLogin = document.getElementById('btnAbrirLoginNav');
+            const btnRegistro = document.getElementById('btnAbrirRegistroNav');
+            const btnLoginResena = document.getElementById('btnAbrirLoginResena');
+
+            if (btnLogin) btnLogin.onclick = () => abrirModal('modalLogin');
+            if (btnRegistro) btnRegistro.onclick = () => abrirModal('modalRegistro');
+            if (btnLoginResena) btnLoginResena.onclick = () => abrirModal('modalLogin');
         }
 
         document.getElementById('btnAbrirEditarPerfil').addEventListener('click', () => {
@@ -983,41 +1000,14 @@
         });
 
         onAuthStateChanged(auth, (user) => {
-            const authBar = document.getElementById('authBar');
             usuarioActual = user;
+            actualizarBarraAuth(user);
 
-            if (user) {
-                const nombreMostrar = user.displayName || user.email;
-                authBar.innerHTML = `
-                    <span class="user-welcome">Hola, <strong>${escapeHTML(nombreMostrar)}</strong></span>
-                    <button id="btnMiPerfil" class="btn-auth-secundario">👤 Mi Perfil</button>
-                    <button id="btnLogout" class="btn-auth-secundario">Cerrar Sesión</button>
-                `;
-                document.getElementById('btnMiPerfil').addEventListener('click', mostrarMiPerfil);
-                document.getElementById('btnLogout').addEventListener('click', () => {
-                    signOut(auth);
-                    mostrarVistaPrincipal();
-                });
-                document.getElementById('bloqueFormResena').style.display = 'block';
-                document.getElementById('bloqueLoginRequerido').style.display = 'none';
-            } else {
-                authBar.innerHTML = `
-                    <button id="btnAbrirLogin" class="btn-auth-primario">Iniciar Sesión</button>
-                    <button id="btnAbrirRegistro" class="btn-auth-secundario">Registrarse</button>
-                `;
-                document.getElementById('btnAbrirLogin').addEventListener('click', () => abrirModal('modalLogin'));
-                document.getElementById('btnAbrirRegistro').addEventListener('click', () => abrirModal('modalRegistro'));
-                document.getElementById('bloqueFormResena').style.display = 'none';
-                document.getElementById('bloqueLoginRequerido').style.display = 'block';
-                mostrarVistaPrincipal();
-            }
-
-            if (!resenasCargadasPorPrimera Vez) {
+            if (!resenasCargadasPorPrimeraVez) {
                 cargarResenas();
-                resenasCargadasPorPrimera Vez = true;
+                resenasCargadasPorPrimeraVez = true;
             } else {
-                // Si ya estaban cargadas, solo refrescamos los estilos visuales de los botones de voto según el nuevo usuario
-                actualizarVotosVisuales();
+                cargarResenas();
             }
         });
 
@@ -1087,7 +1077,6 @@
                     contenedor.appendChild(tarjeta);
                 }
 
-                // Eventos de autor
                 document.querySelectorAll('.autor').forEach(span => {
                     span.addEventListener('click', function() {
                         const uidAjeno = this.getAttribute('data-uid');
@@ -1098,7 +1087,6 @@
                     });
                 });
 
-                // Eventos de eliminar reseña
                 document.querySelectorAll('.btn-eliminar').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const id = this.getAttribute('data-id');
@@ -1113,7 +1101,6 @@
                     });
                 });
 
-                // Eventos de Likes y Dislikes con actualización INSTANTÁNEA (sin recargar la lista)
                 document.querySelectorAll('.tarjeta-acciones button').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         if (!usuarioActual) {
@@ -1141,7 +1128,6 @@
                         let votantes = data.votantes || {};
                         const votoAnterior = votantes[usuarioActual.uid];
 
-                        // Actualización visual instantánea en la interfaz
                         if (votoAnterior === tipoNuevo) {
                             if (tipoNuevo === 'like') { likes--; btnLike.classList.remove('activo'); }
                             if (tipoNuevo === 'dislike') { dislikes--; btnDislike.classList.remove('activo'); }
@@ -1159,7 +1145,6 @@
                         spanLikes.textContent = likes;
                         spanDislikes.textContent = dislikes;
 
-                        // Guardar en Firestore en segundo plano sin alterar la vista
                         await updateDoc(refDoc, {
                             likes: likes,
                             dislikes: dislikes,
@@ -1171,11 +1156,6 @@
             } catch (e) {
                 contenedor.innerHTML = "<p style='color: #d9534f;'>Error al cargar las reseñas desde la nube.</p>";
             }
-        }
-
-        function actualizarVotosVisuales() {
-            // Solo actualiza los estados activos de los botones si cambia la sesión sin recargar todo
-            cargarResenas();
         }
 
         document.getElementById('formResena').addEventListener('submit', async function(e) {
