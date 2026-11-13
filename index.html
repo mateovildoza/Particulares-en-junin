@@ -39,7 +39,7 @@
             z-index: 1000;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .nav-logo { color: white; font-weight: 800; text-decoration: none; font-size: 1.1rem; }
+        .nav-logo { color: white; font-weight: 800; text-decoration: none; font-size: 1.1rem; cursor: pointer; }
         .nav-right { display: flex; align-items: center; gap: 20px; }
         .nav-links { display: flex; gap: 20px; list-style: none; margin: 0; padding: 0; align-items: center; }
         .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
@@ -191,7 +191,21 @@
             border-radius: 6px;
         }
         .btn-eliminar:hover { opacity: 1; background: rgba(217, 83, 79, 0.1); }
-        .tarjeta-resena .autor { font-weight: 700; font-size: 1.1rem; color: #222; display: block;}
+        .tarjeta-resena .autor { font-weight: 700; font-size: 1.1rem; color: #222; display: inline-block; cursor: pointer; transition: 0.2s; }
+        .tarjeta-resena .autor:hover { color: var(--naranja); text-decoration: underline; }
+        
+        .badge-nivel {
+            background: #eef2f7;
+            color: #495057;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-left: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
         .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 10px 0; }
         .estrellas { color: #f59e0b; margin-bottom: 3px; font-size: 0.9rem; }
 
@@ -259,7 +273,6 @@
         }
         .btn-enviar-resena:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* Modales normales para Login y Registro */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -286,7 +299,7 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
-        /* Pantalla Completa de Perfil */
+        /* Pantalla Completa de Perfil Propio o Ajeno */
         #vistaPerfil {
             display: none;
             padding: 140px 10% 80px 10%;
@@ -300,6 +313,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .btn-volver-inicio {
             background: var(--fondo-oscuro);
@@ -398,7 +413,7 @@
 <body>
 
     <nav class="navbar">
-        <a href="#" class="nav-logo" id="logoInicio">Mateo Vildoza</a>
+        <a class="nav-logo" id="logoInicio">Mateo Vildoza</a>
         <div class="nav-right">
             <ul class="nav-links" id="navLinksMenu">
                 <li><a href="#clases">Clases</a></li>
@@ -524,19 +539,22 @@
         </section>
     </div>
 
-    <!-- VISTA DE PERFIL EN PANTALLA COMPLETA (Reemplaza lo anterior) -->
+    <!-- VISTA DE PERFIL EN PANTALLA COMPLETA (Propio o de Alumnos) -->
     <div id="vistaPerfil">
         <div class="perfil-header-principal">
             <div>
-                <h2 style="font-size: 2.5rem; margin: 0 0 5px 0; font-weight: 900;">MI PERFIL DE ALUMNO</h2>
+                <h2 style="font-size: 2.5rem; margin: 0 0 5px 0; font-weight: 900;" id="perfilTituloVista">PERFIL DE ALUMNO</h2>
                 <p style="color: #666; font-size: 1.1rem; margin: 0;" id="perfilNombreRol">👤 Nombre: Cargando...</p>
                 <p style="color: #666; font-size: 1.05rem; margin: 5px 0 0 0;" id="perfilNivelUsuario">🎯 Nivel: Cargando...</p>
             </div>
-            <button class="btn-volver-inicio" id="btnVolverInicio">← Volver al Inicio</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="display: none; padding: 10px 16px;">✏️ Editar mis datos</button>
+                <button class="btn-volver-inicio" id="btnVolverInicio">← Volver al Inicio</button>
+            </div>
         </div>
 
-        <div class="perfil-grid">
-            <div class="perfil-card-progreso">
+        <div class="perfil-grid" id="perfilGridContenido">
+            <div class="perfil-card-progreso" id="cajaProgresoHoras">
                 <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏆 PROGRESO DE HORAS ACUMULADAS</h3>
                 <p style="margin: 0; font-size: 1.05rem; color: #555;">Total horas pagadas: <strong id="perfilHorasNum" style="color: var(--naranja);">0 hs</strong></p>
                 <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #888;">Meta para clase bonificada: 10 horas</p>
@@ -549,28 +567,49 @@
 
             <div class="perfil-card-consejo">
                 <div>
-                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">💡 RECOMENDACIÓN DEL ENTRENADOR</h3>
+                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">💡 RECOMENDACIÓN / OBJETIVOS</h3>
                     <p style="margin: 0; font-size: 1.05rem; color: #555; line-height: 1.5;" id="perfilRecomendacion">Cargando objetivo actual...</p>
                 </div>
-                <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; margin-top: 25px; display: block; padding: 14px;">Reservar Próxima Clase por WhatsApp</a>
+                <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; margin-top: 25px; display: block; padding: 14px;">Reservar Clase con Mateo</a>
             </div>
         </div>
 
-        <h3 style="margin: 40px 0 15px 0; font-size: 1.4rem; font-weight: 800;">Historial de Clases Recientes</h3>
-        <table class="tabla-historial">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Duración</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody id="tablaHistorialCuerpo">
-                <tr>
-                    <td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="seccionHistorialContainer">
+            <h3 style="margin: 40px 0 15px 0; font-size: 1.4rem; font-weight: 800;">Historial de Clases Recientes</h3>
+            <table class="tabla-historial">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Duración</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHistorialCuerpo">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Editar Perfil -->
+    <div class="modal-overlay" id="modalEditarPerfil">
+        <div class="modal-box">
+            <button class="modal-cerrar" id="cerrarModalEditar">&times;</button>
+            <h3>Editar Mis Datos</h3>
+            <form id="formEditarPerfil">
+                <div class="campo-grupo">
+                    <label for="editNivel">Nivel o Categoría (TMT / FETEMBA)</label>
+                    <input type="text" id="editNivel" placeholder="Ej: Intermedio - Cat. 3ra TMT" required>
+                </div>
+                <div class="campo-grupo">
+                    <label for="editRecomendacion">Tu objetivo o enfoque actual</label>
+                    <input type="text" id="editRecomendacion" placeholder="Ej: Mejorar recepción y revés" required>
+                </div>
+                <button type="submit" class="btn-enviar-resena">Guardar Cambios</button>
+            </form>
+        </div>
     </div>
 
     <!-- Modal Login -->
@@ -607,6 +646,10 @@
                     <input type="text" id="regApellido" placeholder="Ej: Coppola" required>
                 </div>
                 <div class="campo-grupo">
+                    <label for="regNivel">Nivel o Categoría (TMT / FETEMBA)</label>
+                    <input type="text" id="regNivel" placeholder="Ej: Intermedio - Cat. 3ra TMT" required>
+                </div>
+                <div class="campo-grupo">
                     <label for="regEmail">Correo electrónico</label>
                     <input type="email" id="regEmail" name="username" autocomplete="username" placeholder="tuemail@gmail.com" required>
                 </div>
@@ -629,7 +672,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Transición de Pantallas -->
+    <!-- Lógica de Firebase, Edición de Perfil y Vistas -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -660,6 +703,8 @@
 
         document.getElementById('cerrarModalLogin').addEventListener('click', cerrarModales);
         document.getElementById('cerrarModalRegistro').addEventListener('click', cerrarModales);
+        document.getElementById('cerrarModalEditar').addEventListener('click', cerrarModales);
+        
         document.getElementById('logoInicio').addEventListener('click', (e) => {
             e.preventDefault();
             mostrarVistaPrincipal();
@@ -669,6 +714,10 @@
             mostrarVistaPrincipal();
         });
 
+        document.getElementById('btnAbrirEditarPerfil').addEventListener('click', () => {
+            abrirModal('modalEditarPerfil');
+        });
+
         function mostrarVistaPrincipal() {
             document.getElementById('vistaPerfil').style.display = 'none';
             document.getElementById('vistaPrincipal').style.display = 'block';
@@ -676,19 +725,26 @@
             window.scrollTo(0, 0);
         }
 
-        async function mostrarVistaPerfil() {
+        async function mostrarMiPerfil() {
             if (!usuarioActual) return;
-            
+            cargarDatosPerfil(usuarioActual.uid, true);
+        }
+
+        async function mostrarPerfilAjeno(uidAjeno, nombreCompletoAjeno) {
+            cargarDatosPerfil(uidAjeno, false, nombreCompletoAjeno);
+        }
+
+        async function cargarDatosPerfil(uidTarget, esMiPerfil, nombreFallback = "Alumno") {
             document.getElementById('vistaPrincipal').style.display = 'none';
             document.getElementById('seccionFinal').style.display = 'none';
             document.getElementById('vistaPerfil').style.display = 'block';
             window.scrollTo(0, 0);
 
-            const refUsuario = doc(db, "usuarios", usuarioActual.uid);
+            const refUsuario = doc(db, "usuarios", uidTarget);
             const snapUsuario = await getDoc(refUsuario);
 
             let horas = 0;
-            let nivel = "Intermedio";
+            let nivel = "Sin especificar";
             let recomendacion = "Mejorar desplazamiento y postura en servicio.";
 
             if (snapUsuario.exists()) {
@@ -696,7 +752,8 @@
                 horas = datos.horasAcumuladas || 0;
                 nivel = datos.nivel || nivel;
                 recomendacion = datos.recomendacion || recomendacion;
-            } else {
+            } else if (esMiPerfil) {
+                // Si es usuario viejo y no tiene documento creado, se lo creamos por defecto
                 await setDoc(refUsuario, {
                     horasAcumuladas: 0,
                     nivel: "Intermedio",
@@ -704,30 +761,76 @@
                 }, { merge: true });
             }
 
-            document.getElementById('perfilNombreRol').innerHTML = `👤 Nombre: ${escapeHTML(usuarioActual.displayName || "Alumno")}`;
-            document.getElementById('perfilNivelUsuario').innerHTML = `🎯 Nivel: ${escapeHTML(nivel)}`;
-            document.getElementById('perfilHorasNum').textContent = `${horas} hs`;
+            document.getElementById('perfilTituloVista').textContent = esMiPerfil ? "MI PERFIL DE ALUMNO" : "PERFIL DE ALUMNO";
+            document.getElementById('perfilNombreRol').innerHTML = `👤 Nombre: ${escapeHTML(esMiPerfil ? (usuarioActual.displayName || "Alumno") : nombreFallback)}`;
+            document.getElementById('perfilNivelUsuario').innerHTML = `🎯 Nivel / Categoría: ${escapeHTML(nivel)}`;
             document.getElementById('perfilRecomendacion').textContent = `Objetivo actual: ${recomendacion}`;
 
-            let porcentaje = (horas / 10) * 100;
-            if (porcentaje > 100) porcentaje = 100;
-            document.getElementById('barraProgreso').style.width = `${porcentaje}%`;
+            // Mostrar u ocultar el botón de editar según sea su perfil propio
+            const btnEditar = document.getElementById('btnAbrirEditarPerfil');
+            btnEditar.style.display = esMiPerfil ? 'block' : 'none';
 
-            const textoMeta = document.getElementById('perfilTextoMeta');
-            if (horas >= 10) {
-                textoMeta.innerHTML = "¡Felicitaciones! Tenés una clase bonificada de 2 horas disponible para reclamar con Mateo.";
-            } else {
-                let faltantes = 10 - horas;
-                textoMeta.innerHTML = `¡Faltan solo <strong>${faltantes} horas</strong> para tu clase de 2 horas gratis!`;
+            // Rellenar inputs del modal de edición con los datos actuales
+            if (esMiPerfil) {
+                document.getElementById('editNivel').value = nivel !== "Sin especificar" ? nivel : "";
+                document.getElementById('editRecomendacion').value = recomendacion;
             }
 
-            const cuerpoTabla = document.getElementById('tablaHistorialCuerpo');
-            cuerpoTabla.innerHTML = `
-                <tr><td>10/11/26</td><td>1.5h</td><td>Completada</td></tr>
-                <tr><td>08/11/26</td><td>2.0h</td><td>Completada</td></tr>
-                <tr><td>03/11/26</td><td>1.5h</td><td>Completada</td></tr>
-            `;
+            const cajaProgreso = document.getElementById('cajaProgresoHoras');
+            const seccionHistorial = document.getElementById('seccionHistorialContainer');
+
+            if (esMiPerfil) {
+                cajaProgreso.style.display = 'block';
+                seccionHistorial.style.display = 'block';
+                document.getElementById('perfilHorasNum').textContent = `${horas} hs`;
+
+                let porcentaje = (horas / 10) * 100;
+                if (porcentaje > 100) porcentaje = 100;
+                document.getElementById('barraProgreso').style.width = `${porcentaje}%`;
+
+                const textoMeta = document.getElementById('perfilTextoMeta');
+                if (horas >= 10) {
+                    textoMeta.innerHTML = "¡Felicitaciones! Tenés una clase bonificada de 2 horas disponible para reclamar con Mateo.";
+                } else {
+                    let faltantes = 10 - horas;
+                    textoMeta.innerHTML = `¡Faltan solo <strong>${faltantes} horas</strong> para tu clase de 2 horas gratis!`;
+                }
+
+                const cuerpoTabla = document.getElementById('tablaHistorialCuerpo');
+                cuerpoTabla.innerHTML = `
+                    <tr><td>10/11/26</td><td>1.5h</td><td>Completada</td></tr>
+                    <tr><td>08/11/26</td><td>2.0h</td><td>Completada</td></tr>
+                    <tr><td>03/11/26</td><td>1.5h</td><td>Completada</td></tr>
+                `;
+            } else {
+                cajaProgreso.style.display = 'none';
+                seccionHistorial.style.display = 'none';
+            }
         }
+
+        // Guardar cambios de edición de perfil
+        document.getElementById('formEditarPerfil').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!usuarioActual) return;
+
+            const nuevoNivel = document.getElementById('editNivel').value.trim();
+            const nuevaRecomendacion = document.getElementById('editRecomendacion').value.trim();
+
+            try {
+                const refUsuario = doc(db, "usuarios", usuarioActual.uid);
+                await updateDoc(refUsuario, {
+                    nivel: nuevoNivel,
+                    recomendacion: nuevaRecomendacion
+                });
+
+                cerrarModales();
+                alert("¡Perfil actualizado con éxito!");
+                mostrarMiPerfil(); // Recargar la vista de perfil actualizada
+                cargarResenas();   // Recargar reseñas para actualizar los badges de nivel
+            } catch(error) {
+                alert("Error al actualizar el perfil: " + error.message);
+            }
+        });
 
         onAuthStateChanged(auth, (user) => {
             const authBar = document.getElementById('authBar');
@@ -740,7 +843,7 @@
                     <button id="btnMiPerfil" class="btn-auth-secundario">👤 Mi Perfil</button>
                     <button id="btnLogout" class="btn-auth-secundario">Cerrar Sesión</button>
                 `;
-                document.getElementById('btnMiPerfil').addEventListener('click', mostrarVistaPerfil);
+                document.getElementById('btnMiPerfil').addEventListener('click', mostrarMiPerfil);
                 document.getElementById('btnLogout').addEventListener('click', () => {
                     signOut(auth);
                     mostrarVistaPrincipal();
@@ -776,7 +879,7 @@
                     return;
                 }
 
-                querySnapshot.forEach((documento) => {
+                for (const documento of querySnapshot.docs) {
                     const r = documento.data();
                     const docId = documento.id;
                     const numEstrellas = parseInt(r.estrellas) || 5;
@@ -788,11 +891,22 @@
                         fechaTexto = r.fecha.toDate().toLocaleDateString('es-AR', fechaOpciones);
                     }
 
+                    let nivelAlumno = "Alumno";
+                    if (r.userId) {
+                        try {
+                            const snapUsr = await getDoc(doc(db, "usuarios", r.userId));
+                            if (snapUsr.exists()) {
+                                nivelAlumno = snapUsr.data().nivel || "Alumno";
+                            }
+                        } catch(err) {}
+                    }
+
                     const likes = r.likes || 0;
                     const dislikes = r.dislikes || 0;
                     const votantes = r.votantes || {};
                     const miVoto = usuarioActual ? votantes[usuarioActual.uid] : null;
                     const esMiResena = usuarioActual && usuarioActual.uid === r.userId;
+                    const nombreCompleto = `${r.nombre} ${r.apellido}`;
 
                     const tarjeta = document.createElement('div');
                     tarjeta.classList.add('tarjeta-resena');
@@ -800,7 +914,8 @@
                         <div class="tarjeta-header">
                             <div>
                                 <div class="estrellas">${estrellasTexto}</div>
-                                <span class="autor">${escapeHTML(r.nombre)} ${escapeHTML(r.apellido)}</span>
+                                <span class="autor" data-uid="${r.userId}" data-nombre="${escapeHTML(nombreCompleto)}">${escapeHTML(nombreCompleto)}</span>
+                                <span class="badge-nivel">${escapeHTML(nivelAlumno)}</span>
                                 ${fechaTexto ? `<span style="font-size: 0.75rem; color: #888; display: block; margin-top: 2px;">${fechaTexto}</span>` : ''}
                             </div>
                             ${esMiResena ? `<button class="btn-eliminar" data-id="${docId}">🗑️ Borrar</button>` : ''}
@@ -812,6 +927,16 @@
                         </div>
                     `;
                     contenedor.appendChild(tarjeta);
+                }
+
+                document.querySelectorAll('.autor').forEach(span => {
+                    span.addEventListener('click', function() {
+                        const uidAjeno = this.getAttribute('data-uid');
+                        const nombreAjeno = this.getAttribute('data-nombre');
+                        if (uidAjeno) {
+                            mostrarPerfilAjeno(uidAjeno, nombreAjeno);
+                        }
+                    });
                 });
 
                 document.querySelectorAll('.btn-eliminar').forEach(btn => {
@@ -930,6 +1055,7 @@
             e.preventDefault();
             const nombre = document.getElementById('regNombre').value.trim();
             const apellido = document.getElementById('regApellido').value.trim();
+            const nivel = document.getElementById('regNivel').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
 
@@ -941,7 +1067,7 @@
 
                 await setDoc(doc(db, "usuarios", userCredential.user.uid), {
                     horasAcumuladas: 0,
-                    nivel: "Intermedio",
+                    nivel: nivel,
                     recomendacion: "Mejorar desplazamiento y postura en servicio."
                 });
 
