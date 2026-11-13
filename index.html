@@ -334,6 +334,11 @@
             grid-template-columns: 1.2fr 1fr;
             gap: 25px;
         }
+        .perfil-grid.perfil-centrado {
+            grid-template-columns: 1fr;
+            max-width: 650px;
+            margin: 0 auto;
+        }
         .perfil-card-progreso {
             background: white;
             border: 1px solid #e9ecef;
@@ -598,7 +603,7 @@
         </div>
     </div>
 
-    <!-- Modal Editar Perfil (Sin campo de objetivos) -->
+    <!-- Modal Editar Perfil -->
     <div class="modal-overlay" id="modalEditarPerfil">
         <div class="modal-box">
             <button class="modal-cerrar" id="cerrarModalEditar">&times;</button>
@@ -705,7 +710,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Perfiles -->
+    <!-- Lógica de Firebase y Cálculo Automático de Horas desde el Historial -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -776,34 +781,46 @@
             const refUsuario = doc(db, "usuarios", uidTarget);
             const snapUsuario = await getDoc(refUsuario);
 
-            let horas = 0;
             let nivel = "Sin especificar";
             let edad = "--";
             let madera = "Sin especificar";
             let gomaDrive = "Sin especificar";
             let gomaReves = "Sin especificar";
             let recomendacion = "Pendiente de actualización por el entrenador.";
+            let historialClases = [];
 
             if (snapUsuario.exists()) {
                 const datos = snapUsuario.data();
-                horas = datos.horasAcumuladas || 0;
                 nivel = datos.nivel || nivel;
                 edad = datos.edad || edad;
                 madera = datos.madera || madera;
                 gomaDrive = datos.gomaDrive || gomaDrive;
                 gomaReves = datos.gomaReves || gomaReves;
                 recomendacion = datos.recomendacion || recomendacion;
+                historialClases = datos.historialClases || [];
             } else if (esMiPerfil) {
                 await setDoc(refUsuario, {
-                    horasAcumuladas: 0,
-                    nivel: "Intermedio",
                     edad: "16",
+                    nivel: "Intermedio",
                     madera: "Genérica",
                     gomaDrive: "Genérica",
                     gomaReves: "Genérica",
-                    recomendacion: "Mejorar desplazamiento y postura en servicio."
+                    recomendacion: "Mejorar desplazamiento y postura en servicio.",
+                    historialClases: [
+                        { fecha: "10/11/26", duracion: 1.5, estado: "Completada" },
+                        { fecha: "08/11/26", duracion: 2.0, estado: "Completada" }
+                    ]
                 }, { merge: true });
+
+                const nuevoSnap = await getDoc(refUsuario);
+                historialClases = nuevoSnap.data().historialClases;
             }
+
+            // Calcular horas totales sumando automáticamente el historial de Firebase
+            let horasCalculadas = 0;
+            historialClases.forEach(clase => {
+                horasCalculadas += parseFloat(clase.duracion) || 0;
+            });
 
             document.getElementById('perfilTituloVista').textContent = esMiPerfil ? "MI PERFIL DE ALUMNO" : "PERFIL DE ALUMNO";
             document.getElementById('perfilNombreRol').innerHTML = `👤 Nombre: ${escapeHTML(esMiPerfil ? (usuarioActual.displayName || "Alumno") : nombreFallback)}`;
@@ -827,37 +844,43 @@
 
             const cajaProgreso = document.getElementById('cajaProgresoHoras');
             const seccionHistorial = document.getElementById('seccionHistorialContainer');
+            const gridContenido = document.getElementById('perfilGridContenido');
 
             if (esMiPerfil) {
+                gridContenido.classList.remove('perfil-centrado');
                 cajaProgreso.style.display = 'block';
                 seccionHistorial.style.display = 'block';
-                document.getElementById('perfilHorasNum').textContent = `${horas} hs`;
+                document.getElementById('perfilHorasNum').textContent = `${horasCalculadas} hs`;
 
-                let porcentaje = (horas / 10) * 100;
+                let porcentaje = (horasCalculadas / 10) * 100;
                 if (porcentaje > 100) porcentaje = 100;
                 document.getElementById('barraProgreso').style.width = `${porcentaje}%`;
 
                 const textoMeta = document.getElementById('perfilTextoMeta');
-                if (horas >= 10) {
+                if (horasCalculadas >= 10) {
                     textoMeta.innerHTML = "¡Felicitaciones! Tenés una clase bonificada de 2 horas disponible para reclamar con Mateo.";
                 } else {
-                    let faltantes = 10 - horas;
+                    let faltantes = 10 - horasCalculadas;
                     textoMeta.innerHTML = `¡Faltan solo <strong>${faltantes} horas</strong> para tu clase de 2 horas gratis!`;
                 }
 
                 const cuerpoTabla = document.getElementById('tablaHistorialCuerpo');
-                cuerpoTabla.innerHTML = `
-                    <tr><td>10/11/26</td><td>1.5h</td><td>Completada</td></tr>
-                    <tr><td>08/11/26</td><td>2.0h</td><td>Completada</td></tr>
-                    <tr><td>03/11/26</td><td>1.5h</td><td>Completada</td></tr>
-                `;
+                cuerpoTabla.innerHTML = "";
+                if(historialClases.length === 0) {
+                    cuerpoTabla.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #888;">No hay clases registradas aún.</td></tr>`;
+                } else {
+                    historialClases.forEach(c => {
+                        cuerpoTabla.innerHTML += `<tr><td>${escapeHTML(c.fecha)}</td><td>${c.duracion}h</td><td>${escapeHTML(c.estado)}</td></tr>`;
+                    });
+                }
             } else {
+                // Si es perfil ajeno, centramos la tarjeta de equipamiento para que no quede hueco vacío a la derecha
+                gridContenido.classList.add('perfil-centrado');
                 cajaProgreso.style.display = 'none';
                 seccionHistorial.style.display = 'none';
             }
         }
 
-        // Guardar cambios de edición (Sin dejar modificar los objetivos)
         document.getElementById('formEditarPerfil').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!usuarioActual) return;
@@ -1125,13 +1148,15 @@
                 });
 
                 await setDoc(doc(db, "usuarios", userCredential.user.uid), {
-                    horasAcumuladas: 0,
                     edad: edad,
                     nivel: nivel,
                     madera: madera,
                     gomaDrive: gomaDrive,
                     gomaReves: gomaReves,
-                    recomendacion: "Mejorar desplazamiento y postura en servicio."
+                    recomendacion: "Mejorar desplazamiento y postura en servicio.",
+                    historialClases: [
+                        { fecha: "10/11/26", duracion: 1.5, estado: "Completada" }
+                    ]
                 });
 
                 cerrarModales();
