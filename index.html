@@ -259,7 +259,7 @@
         }
         .btn-enviar-resena:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* Estilos del Modal de Perfil */
+        /* Modales normales para Login y Registro */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -279,12 +279,6 @@
             position: relative;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
-        .modal-box.modal-perfil-ancho {
-            max-width: 750px;
-            max-height: 90vh;
-            overflow-y: auto;
-            text-align: left;
-        }
         .modal-box h3 { margin-top: 0; font-size: 1.8rem; font-weight: 800; }
         .modal-cerrar {
             position: absolute;
@@ -292,23 +286,52 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
+        /* Pantalla Completa de Perfil */
+        #vistaPerfil {
+            display: none;
+            padding: 140px 10% 80px 10%;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .perfil-header-principal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .btn-volver-inicio {
+            background: var(--fondo-oscuro);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .btn-volver-inicio:hover { background: var(--naranja); }
+
         .perfil-grid {
             display: grid;
             grid-template-columns: 1.2fr 1fr;
-            gap: 20px;
-            margin-top: 20px;
+            gap: 25px;
         }
         .perfil-card-progreso {
-            background: #f8f9fa;
+            background: white;
             border: 1px solid #e9ecef;
-            border-radius: 14px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
         .perfil-card-consejo {
-            background: #f8f9fa;
+            background: white;
             border: 1px solid #e9ecef;
-            border-radius: 14px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -318,7 +341,7 @@
             border-radius: 10px;
             height: 14px;
             width: 100%;
-            margin: 15px 0 10px 0;
+            margin: 20px 0 12px 0;
             overflow: hidden;
             position: relative;
         }
@@ -332,18 +355,23 @@
         .tabla-historial {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 25px;
-            font-size: 0.9rem;
+            margin-top: 30px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            padding: 20px;
         }
         .tabla-historial th {
             text-align: left;
             color: #666;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 8px;
+            background: #f8f9fa;
+            padding: 15px;
             font-weight: 600;
+            border-bottom: 2px solid #eee;
         }
         .tabla-historial td {
-            padding: 12px 0;
+            padding: 15px;
             border-bottom: 1px solid #f1f1f1;
             color: #333;
         }
@@ -370,9 +398,9 @@
 <body>
 
     <nav class="navbar">
-        <a href="#" class="nav-logo">Mateo Vildoza</a>
+        <a href="#" class="nav-logo" id="logoInicio">Mateo Vildoza</a>
         <div class="nav-right">
-            <ul class="nav-links">
+            <ul class="nav-links" id="navLinksMenu">
                 <li><a href="#clases">Clases</a></li>
                 <li><a href="#trabajamos">Qué vemos</a></li>
                 <li><a href="#metodo">Cómo trabajo</a></li>
@@ -386,112 +414,164 @@
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="hero-tag">Mateo Vildoza</div>
-        <h1>Te ayudo a mejorar tu nivel en el <span>tenis de mesa</span></h1>
-        <p>Clases particulares, individuales y personalizadas — trabajamos lo que vos realmente necesitás mejorar.</p>
-        <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">Escribime por WhatsApp</a>
-    </section>
+    <!-- CONTENIDO PRINCIPAL DE LA WEB -->
+    <div id="vistaPrincipal">
+        <section class="hero">
+            <div class="hero-tag">Mateo Vildoza</div>
+            <h1>Te ayudo a mejorar tu nivel en el <span>tenis de mesa</span></h1>
+            <p>Clases particulares, individuales y personalizadas — trabajamos lo que vos realmente necesitás mejorar.</p>
+            <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">Escribime por WhatsApp</a>
+        </section>
 
-    <section class="bio">
-        <div class="bio-content">
-            <h2>Me llamo Mateo Vildoza.</h2>
-            <p>Juego al tenis de mesa y compito frecuentemente en torneos en Junín, Pergamino, Rosario y Buenos Aires. Compito en categoría 2da en TMT y 1ra FETEMBA.</p>
-            <p>Me enfoco mucho en el entrenamiento técnico, es algo que vengo trabajando intensamente. Las clases que doy son particulares, individuales y personalizadas — las adapto a cada jugador.</p>
-        </div>
-        <img src="comomellamo2.jpeg" class="bio-img" alt="Mateo Vildoza">
-    </section>
+        <section class="bio">
+            <div class="bio-content">
+                <h2>Me llamo Mateo Vildoza.</h2>
+                <p>Juego al tenis de mesa y compito frecuentemente en torneos en Junín, Pergamino, Rosario y Buenos Aires. Compito en categoría 2da en TMT y 1ra FETEMBA.</p>
+                <p>Me enfoco mucho en el entrenamiento técnico, es algo que vengo trabajando intensamente. Las clases que doy son particulares, individuales y personalizadas — las adapto a cada jugador.</p>
+            </div>
+            <img src="comomellamo2.jpeg" class="bio-img" alt="Mateo Vildoza">
+        </section>
 
-    <section id="clases" class="seccion-blanca">
-        <span class="icon-naranja">🎯</span>
-        <h2>Las clases</h2>
-        <p>Las clases son individuales, nada de grupos. Me enfoco en lo que vos necesitás mejorar. Si sos principiante o si ya jugás hace tiempo, da igual — lo que importa es avanzar desde donde estás.</p>
-    </section>
+        <section id="clases" class="seccion-blanca">
+            <span class="icon-naranja">🎯</span>
+            <h2>Las clases</h2>
+            <p>Las clases son individuales, nada de grupos. Me enfoco en lo que vos necesitás mejorar. Si sos principiante o si ya jugás hace tiempo, da igual — lo que importa es avanzar desde donde estás.</p>
+        </section>
 
-    <section id="trabajamos" class="trabajamos">
-        <h2>Qué vemos en clase</h2>
-        <p class="sub-trabajo">No hay una lista fija. Trabajo lo que cada jugador necesita. Si algo ya te sale bien, lo pulimos</p>
-        
-        <div class="grid-trabajo">
-            <div class="card"><div class="check">✓</div> Técnica de golpes</div>
-            <div class="card"><div class="check">✓</div> Servicio y recepción</div>
-            <div class="card"><div class="check">✓</div> Estrategia básica</div>
-            <div class="card"><div class="check">✓</div> Corrección de errores</div>
-        </div>
+        <section id="trabajamos" class="trabajamos">
+            <h2>Qué vemos en clase</h2>
+            <p class="sub-trabajo">No hay una lista fija. Trabajo lo que cada jugador necesita. Si algo ya te sale bien, lo pulimos</p>
+            
+            <div class="grid-trabajo">
+                <div class="card"><div class="check">✓</div> Técnica de golpes</div>
+                <div class="card"><div class="check">✓</div> Servicio y recepción</div>
+                <div class="card"><div class="check">✓</div> Estrategia básica</div>
+                <div class="card"><div class="check">✓</div> Corrección de errores</div>
+            </div>
 
-        <div class="box-extra">
-            <span>💡</span>
-            <p>Tambien te puedo decir como entrenar en tu club lo que te falta o como pulir lo que ya te sale</p>
-        </div>
-        <p style="color: #666; font-style: italic; margin-top: 20px;">(No trabajamos preparación física)</p>
-    </section>
+            <div class="box-extra">
+                <span>💡</span>
+                <p>Tambien te puedo decir como entrenar en tu club lo que te falta o como pulir lo que ya te sale</p>
+            </div>
+            <p style="color: #666; font-style: italic; margin-top: 20px;">(No trabajamos preparación física)</p>
+        </section>
 
-    <section id="metodo" class="como-trabajo">
-        <img src="foto2.jpeg" class="bio-img" alt="Entrenamiento">
-        <div class="bio-content">
-            <span style="font-size: 2.5rem; color: var(--naranja);">⚡</span>
-            <h2>Cómo trabajo</h2>
-            <p>Lo primero que hago siempre es escuchar. Quiero que el jugador me cuente qué le cuesta, qué le gustaría mejorar, cómo viene jugando.</p>
-            <p>Después hacemos un peloteo simple — ahí ya puedo detectar errores, ver cómo se mueve, cómo golpea. Empezamos a corregir desde ahí con ejercicios básicos.</p>
-        </div>
-    </section>
+        <section id="metodo" class="como-trabajo">
+            <img src="foto2.jpeg" class="bio-img" alt="Entrenamiento">
+            <div class="bio-content">
+                <span style="font-size: 2.5rem; color: var(--naranja);">⚡</span>
+                <h2>Cómo trabajo</h2>
+                <p>Lo primero que hago siempre es escuchar. Quiero que el jugador me cuente qué le cuesta, qué le gustaría mejorar, cómo viene jugando.</p>
+                <p>Después hacemos un peloteo simple — ahí ya puedo detectar errores, ver cómo se mueve, cómo golpea. Empezamos a corregir desde ahí con ejercicios básicos.</p>
+            </div>
+        </section>
 
-    <section class="analisis">
-        <div class="banner-naranja">
-            <span class="tag-opcional">SERVICIO OPCIONAL</span>
-            <h2>Análisis personalizado de juego</h2>
-            <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
-        </div>
-    </section>
+        <section class="analisis">
+            <div class="banner-naranja">
+                <span class="tag-opcional">SERVICIO OPCIONAL</span>
+                <h2>Análisis personalizado de juego</h2>
+                <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
+            </div>
+        </section>
 
-    <section id="donde" class="donde">
-        <span class="icon-naranja" style="font-size: 1.5rem;">📍</span>
-        <h2>Dónde son las clases</h2>
-        <p>Las clases las doy en un espacio propio, tranquilo y sin distracciones. Está pensado para entrenar con atención, sin apuros y sin que nadie moleste.</p>
-    </section>
+        <section id="donde" class="donde">
+            <span class="icon-naranja" style="font-size: 1.5rem;">📍</span>
+            <h2>Dónde son las clases</h2>
+            <p>Las clases las doy en un espacio propio, tranquilo y sin distracciones. Está pensado para entrenar con atención, sin apuros y sin que nadie moleste.</p>
+        </section>
 
-    <section class="horarios">
-        <span style="font-size: 1.5rem; display: block; margin-bottom: 10px;">🕒</span>
-        <h2>Horarios</h2>
-        <p>Los horarios no son fijos. Vos me proponés el día y el horario que mejor te queda, y yo te confirmo según disponibilidad.</p>
-    </section>
+        <section class="horarios">
+            <span style="font-size: 1.5rem; display: block; margin-bottom: 10px;">🕒</span>
+            <h2>Horarios</h2>
+            <p>Los horarios no son fijos. Vos me proponés el día y el horario que mejor te queda, y yo te confirmo según disponibilidad.</p>
+        </section>
 
-    <section id="resenas" class="seccion-resenas">
-        <h2>Opiniones de Alumnos</h2>
-        <p class="resenas-sub">Conocé la experiencia de quienes ya entrenaron y mejoraron su nivel.</p>
+        <section id="resenas" class="seccion-resenas">
+            <h2>Opiniones de Alumnos</h2>
+            <p class="resenas-sub">Conocé la experiencia de quienes ya entrenaron y mejoraron su nivel.</p>
 
-        <div class="resenas-contenedor">
-            <div class="lista-resenas" id="contenedorResenas"></div>
+            <div class="resenas-contenedor">
+                <div class="lista-resenas" id="contenedorResenas"></div>
 
-            <div class="form-resena">
-                <h3>Dejanos tu reseña</h3>
-                <div id="bloqueLoginRequerido" style="text-align: center; padding: 20px 0;">
-                    <p style="color: #666; margin-bottom: 20px;">Iniciá sesión o registrate para poder dejar una opinión sobre las clases.</p>
-                    <button id="btnAbrirLoginResena" class="btn-auth-primario" style="padding: 12px 24px; font-size: 1rem;">Iniciar Sesión</button>
-                </div>
+                <div class="form-resena">
+                    <h3>Dejanos tu reseña</h3>
+                    <div id="bloqueLoginRequerido" style="text-align: center; padding: 20px 0;">
+                        <p style="color: #666; margin-bottom: 20px;">Iniciá sesión o registrate para poder dejar una opinión sobre las clases.</p>
+                        <button id="btnAbrirLoginResena" class="btn-auth-primario" style="padding: 12px 24px; font-size: 1rem;">Iniciar Sesión</button>
+                    </div>
 
-                <div id="bloqueFormResena" style="display: none;">
-                    <form id="formResena">
-                        <div class="campo-grupo">
-                            <label for="estrellas">Calificación</label>
-                            <select id="estrellas" required>
-                                <option value="5">★★★★★ (5/5)</option>
-                                <option value="4">★★★★☆ (4/5)</option>
-                                <option value="3">★★★☆☆ (3/5)</option>
-                                <option value="2">★★☆☆☆ (2/5)</option>
-                                <option value="1">★☆☆☆☆ (1/5)</option>
-                            </select>
-                        </div>
-                        <div class="campo-grupo">
-                            <label for="comentario">¿Qué te parecieron las clases?</label>
-                            <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
-                        </div>
-                        <button type="submit" id="btnEnviar" class="btn-enviar-resena">Publicar Reseña</button>
-                    </form>
+                    <div id="bloqueFormResena" style="display: none;">
+                        <form id="formResena">
+                            <div class="campo-grupo">
+                                <label for="estrellas">Calificación</label>
+                                <select id="estrellas" required>
+                                    <option value="5">★★★★★ (5/5)</option>
+                                    <option value="4">★★★★☆ (4/5)</option>
+                                    <option value="3">★★★☆☆ (3/5)</option>
+                                    <option value="2">★★☆☆☆ (2/5)</option>
+                                    <option value="1">★☆☆☆☆ (1/5)</option>
+                                </select>
+                            </div>
+                            <div class="campo-grupo">
+                                <label for="comentario">¿Qué te parecieron las clases?</label>
+                                <textarea id="comentario" rows="4" placeholder="Contá tu experiencia..." required></textarea>
+                            </div>
+                            <button type="submit" id="btnEnviar" class="btn-enviar-resena">Publicar Reseña</button>
+                        </form>
+                    </div>
                 </div>
             </div>
+        </section>
+    </div>
+
+    <!-- VISTA DE PERFIL EN PANTALLA COMPLETA (Reemplaza lo anterior) -->
+    <div id="vistaPerfil">
+        <div class="perfil-header-principal">
+            <div>
+                <h2 style="font-size: 2.5rem; margin: 0 0 5px 0; font-weight: 900;">MI PERFIL DE ALUMNO</h2>
+                <p style="color: #666; font-size: 1.1rem; margin: 0;" id="perfilNombreRol">👤 Nombre: Cargando...</p>
+                <p style="color: #666; font-size: 1.05rem; margin: 5px 0 0 0;" id="perfilNivelUsuario">🎯 Nivel: Cargando...</p>
+            </div>
+            <button class="btn-volver-inicio" id="btnVolverInicio">← Volver al Inicio</button>
         </div>
-    </section>
+
+        <div class="perfil-grid">
+            <div class="perfil-card-progreso">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏆 PROGRESO DE HORAS ACUMULADAS</h3>
+                <p style="margin: 0; font-size: 1.05rem; color: #555;">Total horas pagadas: <strong id="perfilHorasNum" style="color: var(--naranja);">0 hs</strong></p>
+                <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #888;">Meta para clase bonificada: 10 horas</p>
+                
+                <div class="barra-progreso-contenedor">
+                    <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
+                </div>
+                <p style="margin: 10px 0 0 0; font-size: 0.95rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando progreso...</p>
+            </div>
+
+            <div class="perfil-card-consejo">
+                <div>
+                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">💡 RECOMENDACIÓN DEL ENTRENADOR</h3>
+                    <p style="margin: 0; font-size: 1.05rem; color: #555; line-height: 1.5;" id="perfilRecomendacion">Cargando objetivo actual...</p>
+                </div>
+                <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; margin-top: 25px; display: block; padding: 14px;">Reservar Próxima Clase por WhatsApp</a>
+            </div>
+        </div>
+
+        <h3 style="margin: 40px 0 15px 0; font-size: 1.4rem; font-weight: 800;">Historial de Clases Recientes</h3>
+        <table class="tabla-historial">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Duración</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="tablaHistorialCuerpo">
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <!-- Modal Login -->
     <div class="modal-overlay" id="modalLogin">
@@ -539,54 +619,7 @@
         </div>
     </div>
 
-    <!-- Modal Mi Perfil de Alumno -->
-    <div class="modal-overlay" id="modalPerfil">
-        <div class="modal-box modal-perfil-ancho">
-            <button class="modal-cerrar" id="cerrarModalPerfil">&times;</button>
-            <h3 style="margin-bottom: 5px;">MI PERFIL DE ALUMNO</h3>
-            <p style="color: #666; margin-top: 0;" id="perfilNombreRol">👤 Nombre: Cargando...</p>
-            <p style="color: #666; margin-top: -10px;" id="perfilNivelUsuario">🎯 Nivel: Cargando...</p>
-
-            <div class="perfil-grid">
-                <div class="perfil-card-progreso">
-                    <h4 style="margin: 0 0 10px 0; font-size: 1rem; color: #222;">🏆 PROGRESO DE HORAS ACUMULADAS</h4>
-                    <p style="margin: 0; font-size: 0.9rem; color: #555;">Total horas pagadas: <strong id="perfilHorasNum">0 hs</strong></p>
-                    <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #888;">Meta para clase bonificada: 10 horas</p>
-                    
-                    <div class="barra-progreso-contenedor">
-                        <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
-                    </div>
-                    <p style="margin: 0; font-size: 0.85rem; color: var(--naranja); font-weight: 600;" id="perfilTextoMeta">Calculando progreso...</p>
-                </div>
-
-                <div class="perfil-card-consejo">
-                    <div>
-                        <h4 style="margin: 0 0 10px 0; font-size: 1rem; color: #222;">💡 RECOMENDACIÓN DEL ENTRENADOR</h4>
-                        <p style="margin: 0; font-size: 0.9rem; color: #555;" id="perfilRecomendacion">Cargando objetivo actual...</p>
-                    </div>
-                    <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; margin-top: 15px; display: block;">Reservar Próxima Clase</a>
-                </div>
-            </div>
-
-            <h4 style="margin: 30px 0 10px 0; font-size: 1.1rem;">Historial de Clases Recientes</h4>
-            <table class="tabla-historial">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Duración</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaHistorialCuerpo">
-                    <tr>
-                        <td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <section class="final">
+    <section class="final" id="seccionFinal">
         <h2>¿Empezamos?</h2>
         <p>Si querés consultar por clases o por el análisis de juego, escribime directamente por WhatsApp.</p>
         <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">Escribime por WhatsApp</a>
@@ -596,7 +629,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase, Reseñas, Votos y Perfil de Usuario -->
+    <!-- Lógica de Firebase y Transición de Pantallas -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -627,19 +660,36 @@
 
         document.getElementById('cerrarModalLogin').addEventListener('click', cerrarModales);
         document.getElementById('cerrarModalRegistro').addEventListener('click', cerrarModales);
-        document.getElementById('cerrarModalPerfil').addEventListener('click', cerrarModales);
-        document.getElementById('btnAbrirLoginResena').addEventListener('click', () => abrirModal('modalLogin'));
+        document.getElementById('logoInicio').addEventListener('click', (e) => {
+            e.preventDefault();
+            mostrarVistaPrincipal();
+        });
 
-        // Cargar datos dinámicos del perfil desde la base de datos de usuarios en Firestore
-        async function abrirPerfilUsuario() {
+        document.getElementById('btnVolverInicio').addEventListener('click', () => {
+            mostrarVistaPrincipal();
+        });
+
+        function mostrarVistaPrincipal() {
+            document.getElementById('vistaPerfil').style.display = 'none';
+            document.getElementById('vistaPrincipal').style.display = 'block';
+            document.getElementById('seccionFinal').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        async function mostrarVistaPerfil() {
             if (!usuarioActual) return;
             
+            document.getElementById('vistaPrincipal').style.display = 'none';
+            document.getElementById('seccionFinal').style.display = 'none';
+            document.getElementById('vistaPerfil').style.display = 'block';
+            window.scrollTo(0, 0);
+
             const refUsuario = doc(db, "usuarios", usuarioActual.uid);
             const snapUsuario = await getDoc(refUsuario);
 
             let horas = 0;
-            let nivel = "Principiante / Intermedio";
-            let recomendacion = "Pulir constancia en golpes básicos y técnica de servicio.";
+            let nivel = "Intermedio";
+            let recomendacion = "Mejorar desplazamiento y postura en servicio.";
 
             if (snapUsuario.exists()) {
                 const datos = snapUsuario.data();
@@ -647,7 +697,6 @@
                 nivel = datos.nivel || nivel;
                 recomendacion = datos.recomendacion || recomendacion;
             } else {
-                // Si el usuario no tiene documento creado aún, se lo creamos por defecto en 0
                 await setDoc(refUsuario, {
                     horasAcumuladas: 0,
                     nivel: "Intermedio",
@@ -655,34 +704,29 @@
                 }, { merge: true });
             }
 
-            // Pintar datos en el modal
             document.getElementById('perfilNombreRol').innerHTML = `👤 Nombre: ${escapeHTML(usuarioActual.displayName || "Alumno")}`;
             document.getElementById('perfilNivelUsuario').innerHTML = `🎯 Nivel: ${escapeHTML(nivel)}`;
             document.getElementById('perfilHorasNum').textContent = `${horas} hs`;
             document.getElementById('perfilRecomendacion').textContent = `Objetivo actual: ${recomendacion}`;
 
-            // Calcular barra de progreso (meta 10 horas)
             let porcentaje = (horas / 10) * 100;
             if (porcentaje > 100) porcentaje = 100;
             document.getElementById('barraProgreso').style.width = `${porcentaje}%`;
 
             const textoMeta = document.getElementById('perfilTextoMeta');
             if (horas >= 10) {
-                textoMeta.innerHTML = "¡Felicitaciones! Tenés una clase bonificada de 2 horas disponible para reclamar.";
+                textoMeta.innerHTML = "¡Felicitaciones! Tenés una clase bonificada de 2 horas disponible para reclamar con Mateo.";
             } else {
                 let faltantes = 10 - horas;
                 textoMeta.innerHTML = `¡Faltan solo <strong>${faltantes} horas</strong> para tu clase de 2 horas gratis!`;
             }
 
-            // Historial simulado / o estático de clases recientes
             const cuerpoTabla = document.getElementById('tablaHistorialCuerpo');
             cuerpoTabla.innerHTML = `
                 <tr><td>10/11/26</td><td>1.5h</td><td>Completada</td></tr>
                 <tr><td>08/11/26</td><td>2.0h</td><td>Completada</td></tr>
                 <tr><td>03/11/26</td><td>1.5h</td><td>Completada</td></tr>
             `;
-
-            abrirModal('modalPerfil');
         }
 
         onAuthStateChanged(auth, (user) => {
@@ -696,8 +740,11 @@
                     <button id="btnMiPerfil" class="btn-auth-secundario">👤 Mi Perfil</button>
                     <button id="btnLogout" class="btn-auth-secundario">Cerrar Sesión</button>
                 `;
-                document.getElementById('btnMiPerfil').addEventListener('click', abrirPerfilUsuario);
-                document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
+                document.getElementById('btnMiPerfil').addEventListener('click', mostrarVistaPerfil);
+                document.getElementById('btnLogout').addEventListener('click', () => {
+                    signOut(auth);
+                    mostrarVistaPrincipal();
+                });
                 document.getElementById('bloqueFormResena').style.display = 'block';
                 document.getElementById('bloqueLoginRequerido').style.display = 'none';
             } else {
@@ -709,6 +756,7 @@
                 document.getElementById('btnAbrirRegistro').addEventListener('click', () => abrirModal('modalRegistro'));
                 document.getElementById('bloqueFormResena').style.display = 'none';
                 document.getElementById('bloqueLoginRequerido').style.display = 'block';
+                mostrarVistaPrincipal();
             }
             cargarResenas();
         });
@@ -891,11 +939,10 @@
                     displayName: `${nombre} ${apellido}`
                 });
 
-                // Crear automáticamente el registro de perfil en la colección "usuarios" con su UID
                 await setDoc(doc(db, "usuarios", userCredential.user.uid), {
                     horasAcumuladas: 0,
-                    nivel: "Principiante / Intermedio",
-                    recomendacion: "Empezar a afianzar la postura y los saques."
+                    nivel: "Intermedio",
+                    recomendacion: "Mejorar desplazamiento y postura en servicio."
                 });
 
                 cerrarModales();
