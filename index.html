@@ -192,8 +192,32 @@
         }
         .btn-eliminar:hover { opacity: 1; background: rgba(217, 83, 79, 0.1); }
         .tarjeta-resena .autor { font-weight: 700; font-size: 1.1rem; color: #222; display: block;}
-        .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 10px 0 0 0; }
+        .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 10px 0; }
         .estrellas { color: #f59e0b; margin-bottom: 3px; font-size: 0.9rem; }
+
+        /* Estilos para Likes y Dislikes */
+        .tarjeta-acciones {
+            display: flex;
+            gap: 15px;
+            margin-top: 12px;
+            align-items: center;
+        }
+        .btn-like, .btn-dislike {
+            background: #f1f3f5;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn-like:hover { background: rgba(40, 167, 69, 0.15); color: #28a745; }
+        .btn-dislike:hover { background: rgba(217, 83, 79, 0.15); color: #d9534f; }
 
         .form-resena {
             background: white;
@@ -458,11 +482,11 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- SDK de Firebase y Lógica del Sistema de Reseñas colocado al final del body -->
+    <!-- SDK de Firebase y Lógica del Sistema de Reseñas y Likes -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, increment, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB3ZY3m-KiGs6BW3tTCdqw-aES24N0nP_k",
@@ -544,6 +568,8 @@
                         fechaTexto = r.fecha.toDate().toLocaleDateString('es-AR', fechaOpciones);
                     }
 
+                    const likes = r.likes || 0;
+                    const dislikes = r.dislikes || 0;
                     const esMiResena = usuarioActual && usuarioActual.uid === r.userId;
 
                     const tarjeta = document.createElement('div');
@@ -558,10 +584,15 @@
                             ${esMiResena ? `<button class="btn-eliminar" data-id="${docId}">🗑️ Borrar</button>` : ''}
                         </div>
                         <p class="comentario">${escapeHTML(r.comentario)}</p>
+                        <div class="tarjeta-acciones">
+                            <button class="btn-like" data-id="${docId}">👍 <span>${likes}</span></button>
+                            <button class="btn-dislike" data-id="${docId}">👎 <span>${dislikes}</span></button>
+                        </div>
                     `;
                     contenedor.appendChild(tarjeta);
                 });
 
+                // Eventos de Borrar
                 document.querySelectorAll('.btn-eliminar').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const id = this.getAttribute('data-id');
@@ -573,6 +604,34 @@
                             } catch(e) {
                                 alert("Error al borrar la reseña.");
                             }
+                        }
+                    });
+                });
+
+                // Eventos de Likes
+                document.querySelectorAll('.btn-like').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const id = this.getAttribute('data-id');
+                        try {
+                            const refDoc = doc(db, "resenas", id);
+                            await updateDoc(refDoc, { likes: increment(1) });
+                            cargarResenas();
+                        } catch(e) {
+                            console.error("Error al dar like", e);
+                        }
+                    });
+                });
+
+                // Eventos de Dislikes
+                document.querySelectorAll('.btn-dislike').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const id = this.getAttribute('data-id');
+                        try {
+                            const refDoc = doc(db, "resenas", id);
+                            await updateDoc(refDoc, { dislikes: increment(1) });
+                            cargarResenas();
+                        } catch(e) {
+                            console.error("Error al dar dislike", e);
                         }
                     });
                 });
@@ -604,6 +663,8 @@
                     apellido: apellido,
                     estrellas: estrellas,
                     comentario: comentario,
+                    likes: 0,
+                    dislikes: 0,
                     fecha: serverTimestamp()
                 });
 
