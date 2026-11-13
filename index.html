@@ -299,7 +299,7 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
-        /* Estilo Ficha de Jugador Profesional */
+        /* Pantalla de Perfil */
         #vistaPerfil {
             display: none;
             padding: 140px 10% 80px 10%;
@@ -308,6 +308,8 @@
             box-sizing: border-box;
             text-align: left;
         }
+
+        /* Ficha Estilo Jugador (para cuando se ve un perfil ajeno) */
         .ficha-contenedor {
             max-width: 900px;
             margin: 0 auto;
@@ -368,24 +370,37 @@
         }
         .ficha-dato-item strong { color: #111; }
 
-        .perfil-grid-propio {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-top: 30px;
+        /* Contenedor Propio (Dos columnas para Mi Perfil) */
+        .perfil-propio-layout {
+            max-width: 1100px;
+            margin: 0 auto;
         }
-        .perfil-card-progreso {
-            background: #fafbfc;
+        .perfil-header-principal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .perfil-grid-dos-columnas {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+        }
+        .perfil-card-blanca {
+            background: white;
             border: 1px solid #e1e4e8;
-            border-radius: 12px;
-            padding: 25px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
         .barra-progreso-contenedor {
             background: #e9ecef;
             border-radius: 10px;
-            height: 12px;
+            height: 14px;
             width: 100%;
-            margin: 15px 0 10px 0;
+            margin: 20px 0 12px 0;
             overflow: hidden;
             position: relative;
         }
@@ -395,30 +410,29 @@
             border-radius: 10px;
             transition: width 0.5s ease;
         }
-
+        
         .tabla-historial {
             width: 100%;
             border-collapse: collapse;
             margin-top: 30px;
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
             border: 1px solid #e1e4e8;
         }
         .tabla-historial th {
             text-align: left;
             color: #666;
             background: #f8f9fa;
-            padding: 12px 15px;
+            padding: 15px;
             font-weight: 600;
-            font-size: 0.9rem;
             border-bottom: 2px solid #eee;
         }
         .tabla-historial td {
-            padding: 12px 15px;
+            padding: 15px;
             border-bottom: 1px solid #f1f1f1;
             color: #333;
-            font-size: 0.9rem;
         }
 
         .final { background-color: var(--fondo-oscuro); color: white; padding: 120px 10%; text-align: center; }
@@ -427,8 +441,8 @@
 
         .footer { background-color: #2a2d31; color: #6c757d; padding: 30px 10%; font-size: 0.8rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 
-        @media (max-width: 850px) {
-            .ficha-grid-datos, .perfil-grid-propio { grid-template-columns: 1fr; }
+        @media (max-width: 900px) {
+            .ficha-grid-datos, .perfil-grid-dos-columnas { grid-template-columns: 1fr; }
             .bio, .como-trabajo, .resenas-contenedor { flex-direction: column; text-align: center; gap: 20px;}
             .resenas-contenedor { grid-template-columns: 1fr; text-align: left; }
             .bio-img { width: 100%; max-width: 450px;}
@@ -569,74 +583,104 @@
         </section>
     </div>
 
-    <!-- VISTA DE PERFIL ESTILO FICHA DE JUGADOR -->
+    <!-- VISTA DE PERFIL (Dinámica: Ficha para ajenos, Dos columnas para propio) -->
     <div id="vistaPerfil">
-        <div class="ficha-contenedor">
-            <div class="ficha-header-bar">
-                <div>
-                    <h2 id="fichaNombre">Nombre del Jugador</h2>
-                    <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Nivel / Categoría</p>
-                </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="display: none; padding: 8px 14px; font-size: 0.85rem;">✏️ Editar datos</button>
-                    <button class="btn-volver-inicio" id="btnVolverInicio">← Volver</button>
-                </div>
-            </div>
-
-            <div class="ficha-body">
-                <div class="ficha-seccion-titulo">Datos Deportivos</div>
-                <div class="ficha-grid-datos">
-                    <div class="ficha-dato-item"><strong>Madera:</strong> <span id="valMadera">-</span></div>
-                    <div class="ficha-dato-item"><strong>Goma Drive:</strong> <span id="valGomaDrive">-</span></div>
-                    <div class="ficha-dato-item"><strong>Goma Revés:</strong> <span id="valGomaReves">-</span></div>
-                    <div class="ficha-dato-item"><strong>Nivel / Categoría:</strong> <span id="valNivel">-</span></div>
+        
+        <!-- DISEÑO 1: FICHA DE JUGADOR (Para cuando se ve un perfil ajeno) -->
+        <div id="contenedorPerfilAjeno" style="display: none;">
+            <div class="ficha-contenedor">
+                <div class="ficha-header-bar">
+                    <div>
+                        <h2 id="fichaNombre">Nombre del Jugador</h2>
+                        <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Nivel / Categoría</p>
+                    </div>
+                    <div>
+                        <button class="btn-volver-inicio" onclick="mostrarVistaPrincipal()">← Volver</button>
+                    </div>
                 </div>
 
-                <div class="ficha-seccion-titulo">Datos Personales</div>
-                <div class="ficha-grid-datos">
-                    <div class="ficha-dato-item"><strong>Edad:</strong> <span id="valEdad">-</span> años</div>
-                    <div class="ficha-dato-item"><strong>Entrenador:</strong> Mateo Vildoza</div>
-                </div>
-
-                <div class="ficha-seccion-titulo">Objetivo / Enfoque Actual</div>
-                <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando objetivo...</p>
-
-                <!-- Bloque exclusivo visible solo en tu propio perfil -->
-                <div id="bloquePropioPerfil" style="display: none;">
-                    <div class="perfil-grid-propio">
-                        <div class="perfil-card-progreso">
-                            <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #222;">🏆 Horas Acumuladas</h3>
-                            <p style="margin: 0; font-size: 1rem; color: #555;">Total pagadas: <strong id="perfilHorasNum" style="color: var(--naranja);">0 hs</strong></p>
-                            <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #888;">Meta para clase bonificada: 10 horas</p>
-                            
-                            <div class="barra-progreso-contenedor">
-                                <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
-                            </div>
-                            <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando...</p>
-                        </div>
-
-                        <div style="display: flex; flex-direction: column; justify-content: center;">
-                            <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; display: block; padding: 15px; font-size: 1rem;">📅 Reservar Clase con Mateo</a>
-                        </div>
+                <div class="ficha-body">
+                    <div class="ficha-seccion-titulo">Datos Deportivos</div>
+                    <div class="ficha-grid-datos">
+                        <div class="ficha-dato-item"><strong>Madera:</strong> <span id="valMadera">-</span></div>
+                        <div class="ficha-dato-item"><strong>Goma Drive:</strong> <span id="valGomaDrive">-</span></div>
+                        <div class="ficha-dato-item"><strong>Goma Revés:</strong> <span id="valGomaReves">-</span></div>
+                        <div class="ficha-dato-item"><strong>Nivel / Categoría:</strong> <span id="valNivel">-</span></div>
                     </div>
 
-                    <h3 style="margin: 35px 0 15px 0; font-size: 1.2rem; font-weight: 800;">Historial de Clases Recientes</h3>
-                    <table class="tabla-historial">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Duración</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaHistorialCuerpo">
-                            <tr><td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="ficha-seccion-titulo">Datos Personales</div>
+                    <div class="ficha-grid-datos">
+                        <div class="ficha-dato-item"><strong>Edad:</strong> <span id="valEdad">-</span> años</div>
+                        <div class="ficha-dato-item"><strong>Entrenador:</strong> Mateo Vildoza</div>
+                    </div>
 
+                    <div class="ficha-seccion-titulo">Objetivo / Enfoque Actual</div>
+                    <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando objetivo...</p>
+                </div>
             </div>
         </div>
+
+        <!-- DISEÑO 2: MI PERFIL (Dos columnas con Equipamiento, Progreso e Historial) -->
+        <div id="contenedorMiPerfil" style="display: none;" class="perfil-propio-layout">
+            <div class="perfil-header-principal">
+                <div>
+                    <h2 style="font-size: 2.3rem; margin: 0 0 5px 0; font-weight: 900;" id="miPerfilNombre">MI PERFIL</h2>
+                    <p style="color: #666; font-size: 1.05rem; margin: 0;" id="miPerfilSub">Panel de Alumno</p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="padding: 10px 16px;">✏️ Editar mis datos</button>
+                    <button class="btn-volver-inicio" style="background: var(--fondo-oscuro); color: white; border: none; padding: 10px 18px;" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
+                </div>
+            </div>
+
+            <div class="perfil-grid-dos-columnas">
+                <!-- Columna Izquierda: Datos y Equipamiento -->
+                <div class="perfil-card-blanca">
+                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 TUS DATOS Y EQUIPAMIENTO</h3>
+                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioEdad"><strong>Edad:</strong> -- años</p>
+                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioNivel"><strong>Nivel / Categoría:</strong> --</p>
+                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioMadera"><strong>Madera:</strong> --</p>
+                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioGomaDrive"><strong>Goma Drive:</strong> --</p>
+                    <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> --</p>
+                    
+                    <h3 style="margin: 20px 0 8px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
+                    <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.5;" id="mioRecomendacion">Cargando objetivo...</p>
+                </div>
+
+                <!-- Columna Derecha: Progreso de Horas y Reserva -->
+                <div style="display: flex; flex-direction: column; gap: 25px;">
+                    <div class="perfil-card-blanca">
+                        <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #222;">🏆 PROGRESO DE HORAS</h3>
+                        <p style="margin: 0; font-size: 1rem; color: #555;">Total pagadas: <strong id="perfilHorasNum" style="color: var(--naranja);">0 hs</strong></p>
+                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #888;">Meta para clase bonificada: 10 horas</p>
+                        
+                        <div class="barra-progreso-contenedor">
+                            <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
+                        </div>
+                        <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando...</p>
+                    </div>
+
+                    <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; display: block; padding: 16px; font-size: 1rem; border-radius: 12px;">📅 Reservar Clase con Mateo</a>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.3rem; font-weight: 800;">Historial de Clases Recientes</h3>
+                <table class="tabla-historial">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Duración</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaHistorialCuerpo">
+                        <tr><td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <!-- Modal Editar Perfil -->
@@ -746,7 +790,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Ficha de Jugador -->
+    <!-- Lógica de Firebase y Renderizado Condicional de Perfiles -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -784,20 +828,16 @@
             mostrarVistaPrincipal();
         });
 
-        document.getElementById('btnVolverInicio').addEventListener('click', () => {
-            mostrarVistaPrincipal();
-        });
-
-        document.getElementById('btnAbrirEditarPerfil').addEventListener('click', () => {
-            abrirModal('modalEditarPerfil');
-        });
-
-        function mostrarVistaPrincipal() {
+        window.mostrarVistaPrincipal = function() {
             document.getElementById('vistaPerfil').style.display = 'none';
             document.getElementById('vistaPrincipal').style.display = 'block';
             document.getElementById('seccionFinal').style.display = 'block';
             window.scrollTo(0, 0);
         }
+
+        document.getElementById('btnAbrirEditarPerfil').addEventListener('click', () => {
+            abrirModal('modalEditarPerfil');
+        });
 
         async function mostrarMiPerfil() {
             if (!usuarioActual) return;
@@ -857,29 +897,27 @@
                 horasCalculadas += parseFloat(clase.duracion) || 0;
             });
 
-            document.getElementById('fichaNombre').textContent = escapeHTML(esMiPerfil ? (usuarioActual.displayName || "Alumno") : nombreFallback);
-            document.getElementById('fichaNivelSub').textContent = `Categoría / Nivel: ${escapeHTML(nivel)}`;
-            
-            document.getElementById('valMadera').textContent = madera;
-            document.getElementById('valGomaDrive').textContent = gomaDrive;
-            document.getElementById('valGomaReves').textContent = gomaReves;
-            document.getElementById('valNivel').textContent = nivel;
-            document.getElementById('valEdad').textContent = edad;
-            document.getElementById('fichaRecomendacion').textContent = recomendacion;
-
-            const btnEditar = document.getElementById('btnAbrirEditarPerfil');
-            btnEditar.style.display = esMiPerfil ? 'block' : 'none';
-
-            const bloquePropio = document.getElementById('bloquePropioPerfil');
+            const contenedorAjeno = document.getElementById('contenedorPerfilAjeno');
+            const contenedorPropio = document.getElementById('contenedorMiPerfil');
 
             if (esMiPerfil) {
+                contenedorAjeno.style.display = 'none';
+                contenedorPropio.style.display = 'block';
+
+                document.getElementById('miPerfilNombre').textContent = `MI PERFIL — ${escapeHTML(usuarioActual.displayName || "Alumno")}`;
+                document.getElementById('mioEdad').innerHTML = `<strong>Edad:</strong> ${escapeHTML(String(edad))} años`;
+                document.getElementById('mioNivel').innerHTML = `<strong>Nivel / Categoría:</strong> ${escapeHTML(nivel)}`;
+                document.getElementById('mioMadera').innerHTML = `<strong>Madera:</strong> ${escapeHTML(madera)}`;
+                document.getElementById('mioGomaDrive').innerHTML = `<strong>Goma Drive:</strong> ${escapeHTML(gomaDrive)}`;
+                document.getElementById('mioGomaReves').innerHTML = `<strong>Goma Revés:</strong> ${escapeHTML(gomaReves)}`;
+                document.getElementById('mioRecomendacion').textContent = recomendacion;
+
                 document.getElementById('editEdad').value = edad !== "--" ? edad : "";
                 document.getElementById('editNivel').value = nivel !== "Sin especificar" ? nivel : "";
                 document.getElementById('editMadera').value = madera !== "Sin especificar" ? madera : "";
                 document.getElementById('editGomaDrive').value = gomaDrive !== "Sin especificar" ? gomaDrive : "";
                 document.getElementById('editGomaReves').value = gomaReves !== "Sin especificar" ? gomaReves : "";
 
-                bloquePropio.style.display = 'block';
                 document.getElementById('perfilHorasNum').textContent = `${horasCalculadas} hs`;
 
                 let porcentaje = (horasCalculadas / 10) * 100;
@@ -904,7 +942,17 @@
                     });
                 }
             } else {
-                bloquePropio.style.display = 'none';
+                contenedorPropio.style.display = 'none';
+                contenedorAjeno.style.display = 'block';
+
+                document.getElementById('fichaNombre').textContent = nombreFallback;
+                document.getElementById('fichaNivelSub').textContent = `Categoría / Nivel: ${escapeHTML(nivel)}`;
+                document.getElementById('valMadera').textContent = madera;
+                document.getElementById('valGomaDrive').textContent = gomaDrive;
+                document.getElementById('valGomaReves').textContent = gomaReves;
+                document.getElementById('valNivel').textContent = nivel;
+                document.getElementById('valEdad').textContent = edad;
+                document.getElementById('fichaRecomendacion').textContent = recomendacion;
             }
         }
 
