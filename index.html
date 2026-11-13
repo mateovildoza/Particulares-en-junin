@@ -18,7 +18,7 @@
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
-            background-color: white;
+            background-color: #f4f6f8;
             color: #1a1a1a;
             -webkit-font-smoothing: antialiased;
             scroll-behavior: smooth;
@@ -299,69 +299,93 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
-        /* Pantalla Completa de Perfil */
+        /* Estilo Ficha de Jugador Profesional */
         #vistaPerfil {
             display: none;
             padding: 140px 10% 80px 10%;
-            background-color: #f8f9fa;
+            background-color: #f4f6f8;
             min-height: 100vh;
             box-sizing: border-box;
             text-align: left;
         }
-        .perfil-header-principal {
+        .ficha-contenedor {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            overflow: hidden;
+            border: 1px solid #e1e4e8;
+        }
+        .ficha-header-bar {
+            background: linear-gradient(135deg, var(--fondo-oscuro), #2d333b);
+            color: white;
+            padding: 25px 35px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
             flex-wrap: wrap;
             gap: 15px;
         }
+        .ficha-header-bar h2 { margin: 0; font-size: 1.8rem; font-weight: 800; }
         .btn-volver-inicio {
-            background: var(--fondo-oscuro);
+            background: rgba(255,255,255,0.15);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: 0.2s;
         }
-        .btn-volver-inicio:hover { background: var(--naranja); }
+        .btn-volver-inicio:hover { background: var(--naranja); border-color: var(--naranja); }
 
-        .perfil-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 25px;
+        .ficha-body {
+            padding: 35px;
         }
-        .perfil-grid.perfil-centrado {
-            grid-template-columns: 1fr;
-            max-width: 650px;
-            margin: 0 auto;
+        .ficha-seccion-titulo {
+            background: #eef2f7;
+            color: #333;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-left: 4px solid var(--naranja);
+            margin: 25px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .ficha-grid-datos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .ficha-dato-item {
+            font-size: 0.95rem;
+            color: #444;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .ficha-dato-item strong { color: #111; }
+
+        .perfil-grid-propio {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 30px;
         }
         .perfil-card-progreso {
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        }
-        .perfil-card-consejo {
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            background: #fafbfc;
+            border: 1px solid #e1e4e8;
+            border-radius: 12px;
+            padding: 25px;
         }
         .barra-progreso-contenedor {
             background: #e9ecef;
             border-radius: 10px;
-            height: 14px;
+            height: 12px;
             width: 100%;
-            margin: 20px 0 12px 0;
+            margin: 15px 0 10px 0;
             overflow: hidden;
             position: relative;
         }
@@ -371,29 +395,30 @@
             border-radius: 10px;
             transition: width 0.5s ease;
         }
-        
+
         .tabla-historial {
             width: 100%;
             border-collapse: collapse;
             margin-top: 30px;
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            padding: 20px;
+            border: 1px solid #e1e4e8;
         }
         .tabla-historial th {
             text-align: left;
             color: #666;
             background: #f8f9fa;
-            padding: 15px;
+            padding: 12px 15px;
             font-weight: 600;
+            font-size: 0.9rem;
             border-bottom: 2px solid #eee;
         }
         .tabla-historial td {
-            padding: 15px;
+            padding: 12px 15px;
             border-bottom: 1px solid #f1f1f1;
             color: #333;
+            font-size: 0.9rem;
         }
 
         .final { background-color: var(--fondo-oscuro); color: white; padding: 120px 10%; text-align: center; }
@@ -402,10 +427,10 @@
 
         .footer { background-color: #2a2d31; color: #6c757d; padding: 30px 10%; font-size: 0.8rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
 
-        @media (max-width: 1000px) {
-            .bio, .como-trabajo, .resenas-contenedor, .perfil-grid { flex-direction: column; text-align: center; gap: 20px;}
+        @media (max-width: 850px) {
+            .ficha-grid-datos, .perfil-grid-propio { grid-template-columns: 1fr; }
+            .bio, .como-trabajo, .resenas-contenedor { flex-direction: column; text-align: center; gap: 20px;}
             .resenas-contenedor { grid-template-columns: 1fr; text-align: left; }
-            .perfil-grid { grid-template-columns: 1fr; }
             .bio-img { width: 100%; max-width: 450px;}
             .grid-trabajo { grid-template-columns: 1fr; width: 100%; }
             .hero h1 { font-size: 2.8rem; }
@@ -544,62 +569,73 @@
         </section>
     </div>
 
-    <!-- VISTA DE PERFIL EN PANTALLA COMPLETA -->
+    <!-- VISTA DE PERFIL ESTILO FICHA DE JUGADOR -->
     <div id="vistaPerfil">
-        <div class="perfil-header-principal">
-            <div>
-                <h2 style="font-size: 2.5rem; margin: 0 0 5px 0; font-weight: 900;" id="perfilTituloVista">PERFIL DE ALUMNO</h2>
-                <p style="color: #666; font-size: 1.1rem; margin: 0;" id="perfilNombreRol">👤 Nombre: Cargando...</p>
-                <p style="color: #666; font-size: 1.05rem; margin: 5px 0 0 0;" id="perfilNivelEdad">🎯 Nivel: Cargando...</p>
-            </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="display: none; padding: 10px 16px;">✏️ Editar mis datos</button>
-                <button class="btn-volver-inicio" id="btnVolverInicio">← Volver al Inicio</button>
-            </div>
-        </div>
-
-        <div class="perfil-grid" id="perfilGridContenido">
-            <div class="perfil-card-progreso" id="cajaProgresoHoras">
-                <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏆 PROGRESO DE HORAS ACUMULADAS</h3>
-                <p style="margin: 0; font-size: 1.05rem; color: #555;">Total horas pagadas: <strong id="perfilHorasNum" style="color: var(--naranja);">0 hs</strong></p>
-                <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #888;">Meta para clase bonificada: 10 horas</p>
-                
-                <div class="barra-progreso-contenedor">
-                    <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
-                </div>
-                <p style="margin: 10px 0 0 0; font-size: 0.95rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando progreso...</p>
-            </div>
-
-            <div class="perfil-card-consejo">
+        <div class="ficha-contenedor">
+            <div class="ficha-header-bar">
                 <div>
-                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 EQUIPAMIENTO (PALA)</h3>
-                    <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="perfilMadera"><strong>Madera:</strong> Cargando...</p>
-                    <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="perfilGomaDrive"><strong>Goma Drive:</strong> Cargando...</p>
-                    <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="perfilGomaReves"><strong>Goma Revés:</strong> Cargando...</p>
-                    
-                    <h3 style="margin: 15px 0 5px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
-                    <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4;" id="perfilRecomendacion">Cargando objetivo...</p>
+                    <h2 id="fichaNombre">Nombre del Jugador</h2>
+                    <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Nivel / Categoría</p>
                 </div>
-                <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; margin-top: 20px; display: block; padding: 12px;">Reservar Clase con Mateo</a>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="display: none; padding: 8px 14px; font-size: 0.85rem;">✏️ Editar datos</button>
+                    <button class="btn-volver-inicio" id="btnVolverInicio">← Volver</button>
+                </div>
             </div>
-        </div>
 
-        <div id="seccionHistorialContainer">
-            <h3 style="margin: 40px 0 15px 0; font-size: 1.4rem; font-weight: 800;">Historial de Clases Recientes</h3>
-            <table class="tabla-historial">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Duración</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaHistorialCuerpo">
-                    <tr>
-                        <td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="ficha-body">
+                <div class="ficha-seccion-titulo">Datos Deportivos</div>
+                <div class="ficha-grid-datos">
+                    <div class="ficha-dato-item"><strong>Madera:</strong> <span id="valMadera">-</span></div>
+                    <div class="ficha-dato-item"><strong>Goma Drive:</strong> <span id="valGomaDrive">-</span></div>
+                    <div class="ficha-dato-item"><strong>Goma Revés:</strong> <span id="valGomaReves">-</span></div>
+                    <div class="ficha-dato-item"><strong>Nivel / Categoría:</strong> <span id="valNivel">-</span></div>
+                </div>
+
+                <div class="ficha-seccion-titulo">Datos Personales</div>
+                <div class="ficha-grid-datos">
+                    <div class="ficha-dato-item"><strong>Edad:</strong> <span id="valEdad">-</span> años</div>
+                    <div class="ficha-dato-item"><strong>Entrenador:</strong> Mateo Vildoza</div>
+                </div>
+
+                <div class="ficha-seccion-titulo">Objetivo / Enfoque Actual</div>
+                <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando objetivo...</p>
+
+                <!-- Bloque exclusivo visible solo en tu propio perfil -->
+                <div id="bloquePropioPerfil" style="display: none;">
+                    <div class="perfil-grid-propio">
+                        <div class="perfil-card-progreso">
+                            <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #222;">🏆 Horas Acumuladas</h3>
+                            <p style="margin: 0; font-size: 1rem; color: #555;">Total pagadas: <strong id="perfilHorasNum" style="color: var(--naranja);">0 hs</strong></p>
+                            <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #888;">Meta para clase bonificada: 10 horas</p>
+                            
+                            <div class="barra-progreso-contenedor">
+                                <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
+                            </div>
+                            <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando...</p>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; justify-content: center;">
+                            <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; display: block; padding: 15px; font-size: 1rem;">📅 Reservar Clase con Mateo</a>
+                        </div>
+                    </div>
+
+                    <h3 style="margin: 35px 0 15px 0; font-size: 1.2rem; font-weight: 800;">Historial de Clases Recientes</h3>
+                    <table class="tabla-historial">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Duración</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaHistorialCuerpo">
+                            <tr><td colspan="3" style="text-align: center; color: #888;">Cargando historial...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -710,7 +746,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Cálculo Automático de Horas desde el Historial -->
+    <!-- Lógica de Firebase y Ficha de Jugador -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -816,23 +852,25 @@
                 historialClases = nuevoSnap.data().historialClases;
             }
 
-            // Calcular horas totales sumando automáticamente el historial de Firebase
             let horasCalculadas = 0;
             historialClases.forEach(clase => {
                 horasCalculadas += parseFloat(clase.duracion) || 0;
             });
 
-            document.getElementById('perfilTituloVista').textContent = esMiPerfil ? "MI PERFIL DE ALUMNO" : "PERFIL DE ALUMNO";
-            document.getElementById('perfilNombreRol').innerHTML = `👤 Nombre: ${escapeHTML(esMiPerfil ? (usuarioActual.displayName || "Alumno") : nombreFallback)}`;
-            document.getElementById('perfilNivelEdad').innerHTML = `🎯 Nivel: ${escapeHTML(nivel)} &nbsp;|&nbsp; 🎂 Edad: ${escapeHTML(String(edad))} años`;
+            document.getElementById('fichaNombre').textContent = escapeHTML(esMiPerfil ? (usuarioActual.displayName || "Alumno") : nombreFallback);
+            document.getElementById('fichaNivelSub').textContent = `Categoría / Nivel: ${escapeHTML(nivel)}`;
             
-            document.getElementById('perfilMadera').innerHTML = `<strong>Madera:</strong> ${escapeHTML(madera)}`;
-            document.getElementById('perfilGomaDrive').innerHTML = `<strong>Goma Drive:</strong> ${escapeHTML(gomaDrive)}`;
-            document.getElementById('perfilGomaReves').innerHTML = `<strong>Goma Revés:</strong> ${escapeHTML(gomaReves)}`;
-            document.getElementById('perfilRecomendacion').textContent = recomendacion;
+            document.getElementById('valMadera').textContent = madera;
+            document.getElementById('valGomaDrive').textContent = gomaDrive;
+            document.getElementById('valGomaReves').textContent = gomaReves;
+            document.getElementById('valNivel').textContent = nivel;
+            document.getElementById('valEdad').textContent = edad;
+            document.getElementById('fichaRecomendacion').textContent = recomendacion;
 
             const btnEditar = document.getElementById('btnAbrirEditarPerfil');
             btnEditar.style.display = esMiPerfil ? 'block' : 'none';
+
+            const bloquePropio = document.getElementById('bloquePropioPerfil');
 
             if (esMiPerfil) {
                 document.getElementById('editEdad').value = edad !== "--" ? edad : "";
@@ -840,16 +878,8 @@
                 document.getElementById('editMadera').value = madera !== "Sin especificar" ? madera : "";
                 document.getElementById('editGomaDrive').value = gomaDrive !== "Sin especificar" ? gomaDrive : "";
                 document.getElementById('editGomaReves').value = gomaReves !== "Sin especificar" ? gomaReves : "";
-            }
 
-            const cajaProgreso = document.getElementById('cajaProgresoHoras');
-            const seccionHistorial = document.getElementById('seccionHistorialContainer');
-            const gridContenido = document.getElementById('perfilGridContenido');
-
-            if (esMiPerfil) {
-                gridContenido.classList.remove('perfil-centrado');
-                cajaProgreso.style.display = 'block';
-                seccionHistorial.style.display = 'block';
+                bloquePropio.style.display = 'block';
                 document.getElementById('perfilHorasNum').textContent = `${horasCalculadas} hs`;
 
                 let porcentaje = (horasCalculadas / 10) * 100;
@@ -874,10 +904,7 @@
                     });
                 }
             } else {
-                // Si es perfil ajeno, centramos la tarjeta de equipamiento para que no quede hueco vacío a la derecha
-                gridContenido.classList.add('perfil-centrado');
-                cajaProgreso.style.display = 'none';
-                seccionHistorial.style.display = 'none';
+                bloquePropio.style.display = 'none';
             }
         }
 
