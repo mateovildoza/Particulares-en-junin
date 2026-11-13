@@ -195,7 +195,7 @@
         .tarjeta-resena .comentario { color: #555; font-size: 0.95rem; line-height: 1.5; margin: 10px 0; }
         .estrellas { color: #f59e0b; margin-bottom: 3px; font-size: 0.9rem; }
 
-        /* Estilos para Likes y Dislikes */
+        /* Estilos de Botones Interactivos con Estado Activo */
         .tarjeta-acciones {
             display: flex;
             gap: 15px;
@@ -218,6 +218,10 @@
         }
         .btn-like:hover { background: rgba(40, 167, 69, 0.15); color: #28a745; }
         .btn-dislike:hover { background: rgba(217, 83, 79, 0.15); color: #d9534f; }
+        
+        /* Estilos cuando el usuario ya votó */
+        .btn-like.activo { background: rgba(40, 167, 69, 0.2); color: #28a745; font-weight: 700; }
+        .btn-dislike.activo { background: rgba(217, 83, 79, 0.2); color: #d9534f; font-weight: 700; }
 
         .form-resena {
             background: white;
@@ -482,11 +486,11 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- SDK de Firebase y Lógica del Sistema de Reseñas y Likes -->
+    <!-- SDK de Firebase y Lógica del Sistema de Reseñas, Fechas y Votos Únicos -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, increment, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB3ZY3m-KiGs6BW3tTCdqw-aES24N0nP_k",
@@ -570,6 +574,9 @@
 
                     const likes = r.likes || 0;
                     const dislikes = r.dislikes || 0;
+                    const votantes = r.votantes || {}; // Objeto que guarda qué votó cada UID
+
+                    const miVoto = usuarioActual ? votantes[usuarioActual.uid] : null; // "like", "dislike" o undefined
                     const esMiResena = usuarioActual && usuarioActual.uid === r.userId;
 
                     const tarjeta = document.createElement('div');
@@ -585,14 +592,14 @@
                         </div>
                         <p class="comentario">${escapeHTML(r.comentario)}</p>
                         <div class="tarjeta-acciones">
-                            <button class="btn-like" data-id="${docId}">👍 <span>${likes}</span></button>
-                            <button class="btn-dislike" data-id="${docId}">👎 <span>${dislikes}</span></button>
+                            <button class="btn-like ${miVoto === 'like' ? 'activo' : ''}" data-id="${docId}">👍 <span>${likes}</span></button>
+                            <button class="btn-dislike ${miVoto === 'dislike' ? 'activo' : ''}" data-id="${docId}">👎 <span>${dislikes}</span></button>
                         </div>
                     `;
                     contenedor.appendChild(tarjeta);
                 });
 
-                // Eventos de Borrar
+                // Borrar Reseña
                 document.querySelectorAll('.btn-eliminar').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const id = this.getAttribute('data-id');
@@ -608,31 +615,59 @@
                     });
                 });
 
-                // Eventos de Likes
+                // Manejar Votos (Like / Dislike inteligente)
+                async function manejarVoto(id, tipoNuevo) {
+                    if (!usuarioActual) {
+                        alert("Tenés que iniciar sesión para votar.");
+                        abrirModal('modalLogin');
+                        return;
+                    }
+
+                    const refDoc = doc(db, "resenas", id);
+                    const docSnap = await getDoc(refDoc);
+                    if (!docSnap.exists()) return;
+
+                    const data = docSnap.data();
+                    let likes = data.likes || 0;
+                    let dislikes = data.dislikes || 0;
+                    let votantes = data.votantes || {};
+
+                    const votoAnterior = votantes[usuarioActual.uid];
+
+                    if (votoAnterior === tipoNuevo) {
+                        // Si hace clic en el mismo botón que ya había votado, le saca el voto
+                        if (tipoNuevo === 'like') likes--;
+                        if (tipoNuevo === 'dislike') dislikes--;
+                        delete votantes[usuarioActual.uid];
+                    } else {
+                        // Si cambia de opinión o vota por primera vez
+                        if (votoAnterior === 'like') likes--;
+                        if (votoAnterior === 'dislike') dislikes--;
+
+                        if (tipoNuevo === 'like') likes++;
+                        if (tipoNuevo === 'dislike') dislikes++;
+
+                        votantes[usuarioActual.uid] = tipoNuevo;
+                    }
+
+                    await updateDoc(refDoc, {
+                        likes: likes,
+                        dislikes: dislikes,
+                        votantes: votantes
+                    });
+
+                    cargarResenas();
+                }
+
                 document.querySelectorAll('.btn-like').forEach(btn => {
-                    btn.addEventListener('click', async function() {
-                        const id = this.getAttribute('data-id');
-                        try {
-                            const refDoc = doc(db, "resenas", id);
-                            await updateDoc(refDoc, { likes: increment(1) });
-                            cargarResenas();
-                        } catch(e) {
-                            console.error("Error al dar like", e);
-                        }
+                    btn.addEventListener('click', function() {
+                        manejarVoto(this.getAttribute('data-id'), 'like');
                     });
                 });
 
-                // Eventos de Dislikes
                 document.querySelectorAll('.btn-dislike').forEach(btn => {
-                    btn.addEventListener('click', async function() {
-                        const id = this.getAttribute('data-id');
-                        try {
-                            const refDoc = doc(db, "resenas", id);
-                            await updateDoc(refDoc, { dislikes: increment(1) });
-                            cargarResenas();
-                        } catch(e) {
-                            console.error("Error al dar dislike", e);
-                        }
+                    btn.addEventListener('click', function() {
+                        manejarVoto(this.getAttribute('data-id'), 'dislike');
                     });
                 });
 
@@ -665,6 +700,7 @@
                     comentario: comentario,
                     likes: 0,
                     dislikes: 0,
+                    votantes: {},
                     fecha: serverTimestamp()
                 });
 
