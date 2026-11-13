@@ -533,7 +533,7 @@
                 <div class="lista-resenas" id="contenedorResenas"></div>
 
                 <div class="form-resena">
-                    <h3>Dejanos tu reseña</h3>
+                    <h3>Dejame tu reseña</h3>
                     <div id="bloqueLoginRequerido" style="text-align: center; padding: 20px 0;">
                         <p style="color: #666; margin-bottom: 20px;">Iniciá sesión o registrate para poder dejar una opinión sobre las clases.</p>
                         <button id="btnAbrirLoginResena" class="btn-auth-primario" style="padding: 12px 24px; font-size: 1rem;">Iniciar Sesión</button>
@@ -584,7 +584,7 @@
                         <div class="ficha-dato-item"><strong>Edad:</strong> <span id="valEdad">-</span> años</div>
                         <div class="ficha-dato-item"><strong>Entrenador:</strong> Mateo Vildoza</div>
                     </div>
-                    <div class="ficha-seccion-titulo">Objetivo / Enfoque Actual</div>
+                    <div class="ficha-seccion-titulo">Objetivo PRINCIPAL</div>
                     <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando información...</p>
                 </div>
             </div>
@@ -617,7 +617,7 @@
 
                 <div class="perfil-card-blanca" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 EQUIPAMIENTO Y OBJETIVO</h3>
+                        <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 EQUIPAMIENTO </h3>
                         <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioMadera"><strong>Madera:</strong> Cargando...</p>
                         <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioGomaDrive"><strong>Goma Drive:</strong> Cargando...</p>
                         <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> Cargando...</p>
@@ -751,7 +751,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase completa y funcional -->
+    <!-- Lógica de Firebase completa con progreso cíclico -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -916,17 +916,12 @@
                 historialClases = nuevoSnap.data().historialClases;
             }
 
-            // Excluimos del cálculo de horas pagadas aquellas clases que indiquen ser gratis o bonificadas
             let horasCalculadas = 0;
             historialClases.forEach(clase => {
-                const estadoTexto = (clase.estado || "").toLowerCase();
-                const esGratis = estadoTexto.includes("gratis") || estadoTexto.includes("bonificada") || (clase.fecha && clase.fecha.toLowerCase().includes("gratis"));
-                if (!esGratis) {
-                    horasCalculadas += parseFloat(clase.duracion) || 0;
-                }
+                horasCalculadas += parseFloat(clase.duracion) || 0;
             });
 
-            // Lógica cíclica para reiniciar la barra cada 10 horas pagadas
+            // Lógica cíclica para reiniciar la barra cada 10 horas
             let horasActualesCiclo = horasCalculadas % 10;
             if (horasActualesCiclo === 0 && horasCalculadas > 0) {
                 horasActualesCiclo = 10;
