@@ -22,7 +22,7 @@
             color: #1a1a1a;
             -webkit-font-smoothing: antialiased;
             scroll-behavior: smooth;
-            overflow-x: hidden; /* Evita el scroll horizontal a la derecha */
+            overflow-x: hidden;
         }
 
         .navbar {
@@ -277,7 +277,7 @@
         }
         .btn-enviar-resena:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* CORRECCIÓN PARA MODALES EN CELULARES (Evita que se corten arriba/abajo) */
+        /* MODALES OPTIMIZADOS PARA CELULARES (Con scroll propio y altura segura) */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -287,7 +287,7 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
         }
         .modal-box {
@@ -296,8 +296,8 @@
             border-radius: 20px;
             width: 100%;
             max-width: 400px;
-            max-height: 90vh; /* Altura máxima para que entre en la pantalla */
-            overflow-y: auto; /* Permite hacer scroll dentro del modal si es largo */
+            max-height: 85vh; /* Altura máxima para que quepa en pantallas chicas */
+            overflow-y: auto; /* Permite hacer scroll vertical sin cortar nada */
             position: relative;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             box-sizing: border-box;
@@ -775,5 +775,523 @@
     <footer class="footer">
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
+
+    <!-- Lógica de JavaScript y Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, setDoc, doc, getDoc, deleteDoc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3ZY3m-KiGs6BW3tTCdqw-aES24N0nP_k",
+            authDomain: "particulares-en-junin.firebaseapp.com",
+            projectId: "particulares-en-junin",
+            storageBucket: "particulares-en-junin.firebasestorage.app",
+            messagingSenderId: "99751846780",
+            appId: "1:99751846780:web:e4be21e7c527cd72c7baf9",
+            measurementId: "G-FYHELSC70E"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let usuarioActual = null;
+        let resenasCargadasPorPrimeraVez = false;
+
+        function abrirModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function cerrarModales() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        document.getElementById('cerrarModalLogin').addEventListener('click', cerrarModales);
+        document.getElementById('cerrarModalRegistro').addEventListener('click', cerrarModales);
+        document.getElementById('cerrarModalEditar').addEventListener('click', cerrarModales);
+        
+        document.getElementById('logoInicio').addEventListener('click', (e) => {
+            e.preventDefault();
+            mostrarVistaPrincipal();
+        });
+
+        window.mostrarVistaPrincipal = function() {
+            document.getElementById('contenedorMiPerfil').style.display = 'none';
+            document.getElementById('contenedorPerfilAjeno').style.display = 'none';
+            document.getElementById('vistaPerfil').style.display = 'none';
+
+            document.getElementById('vistaPrincipal').style.display = 'block';
+            document.getElementById('seccionFinal').style.display = 'block';
+            
+            document.getElementById('navLinksMenu').style.display = 'flex';
+            actualizarBarraAuth(usuarioActual);
+
+            window.scrollTo(0, 0);
+        }
+
+        function actualizarBarraAuth(user) {
+            const authBar = document.getElementById('authBar');
+            if (user) {
+                const nombreMostrar = user.displayName || user.email;
+                authBar.innerHTML = `
+                    <span class="user-welcome">Hola, <strong>${escapeHTML(nombreMostrar)}</strong></span>
+                    <button id="btnMiPerfil" class="btn-auth-secundario">👤 Mi Perfil</button>
+                    <button id="btnLogout" class="btn-auth-secundario">Cerrar Sesión</button>
+                `;
+                document.getElementById('btnMiPerfil').addEventListener('click', mostrarMiPerfil);
+                document.getElementById('btnLogout').addEventListener('click', () => {
+                    signOut(auth);
+                    mostrarVistaPrincipal();
+                });
+                if(document.getElementById('bloqueFormResena')) document.getElementById('bloqueFormResena').style.display = 'block';
+                if(document.getElementById('bloqueLoginRequerido')) document.getElementById('bloqueLoginRequerido').style.display = 'none';
+            } else {
+                authBar.innerHTML = `
+                    <button id="btnAbrirLoginNav" class="btn-auth-primario">Iniciar Sesión</button>
+                    <button id="btnAbrirRegistroNav" class="btn-auth-secundario">Registrarse</button>
+                `;
+                asignarEventosBotonesAuth();
+                if(document.getElementById('bloqueFormResena')) document.getElementById('bloqueFormResena').style.display = 'none';
+                if(document.getElementById('bloqueLoginRequerido')) document.getElementById('bloqueLoginRequerido').style.display = 'block';
+            }
+        }
+
+        function asignarEventosBotonesAuth() {
+            const btnLogin = document.getElementById('btnAbrirLoginNav');
+            const btnRegistro = document.getElementById('btnAbrirRegistroNav');
+            const btnLoginResena = document.getElementById('btnAbrirLoginResena');
+
+            if (btnLogin) btnLogin.onclick = () => abrirModal('modalLogin');
+            if (btnRegistro) btnRegistro.onclick = () => abrirModal('modalRegistro');
+            if (btnLoginResena) btnLoginResena.onclick = () => abrirModal('modalLogin');
+        }
+
+        document.getElementById('btnAbrirEditarPerfil').addEventListener('click', () => {
+            abrirModal('modalEditarPerfil');
+        });
+
+        async function mostrarMiPerfil() {
+            if (!usuarioActual) return;
+            cargarDatosPerfil(usuarioActual.uid, true);
+        }
+
+        async function mostrarPerfilAjeno(uidAjeno, nombreCompletoAjeno) {
+            cargarDatosPerfil(uidAjeno, false, nombreCompletoAjeno);
+        }
+
+        async function cargarDatosPerfil(uidTarget, esMiPerfil, nombreFallback = "Alumno") {
+            document.getElementById('vistaPrincipal').style.display = 'none';
+            document.getElementById('seccionFinal').style.display = 'none';
+            document.getElementById('contenedorMiPerfil').style.display = esMiPerfil ? 'block' : 'none';
+            document.getElementById('contenedorPerfilAjeno').style.display = esMiPerfil ? 'none' : 'block';
+            document.getElementById('vistaPerfil').style.display = 'block';
+            window.scrollTo(0, 0);
+
+            document.getElementById('navLinksMenu').style.display = 'none';
+            document.getElementById('authBar').innerHTML = `
+                <button class="btn-auth-primario" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
+            `;
+
+            if (!esMiPerfil) {
+                document.getElementById('fichaNombre').textContent = nombreFallback;
+                document.getElementById('fichaNivelSub').textContent = "Cargando categoría...";
+                document.getElementById('valMadera').textContent = "Cargando...";
+                document.getElementById('valGomaDrive').textContent = "Cargando...";
+                document.getElementById('valGomaReves').textContent = "Cargando...";
+                document.getElementById('valNivel').textContent = "Cargando...";
+                document.getElementById('valEdad').textContent = "-";
+                document.getElementById('fichaRecomendacion').textContent = "Cargando información...";
+            }
+
+            const refUsuario = doc(db, "usuarios", uidTarget);
+            const snapUsuario = await getDoc(refUsuario);
+
+            let nivel = "Sin especificar";
+            let edad = "--";
+            let madera = "Sin especificar";
+            let gomaDrive = "Sin especificar";
+            let gomaReves = "Sin especificar";
+            let recomendacion = "Pendiente de actualización por el entrenador.";
+            let historialClases = [];
+
+            if (snapUsuario.exists()) {
+                const datos = snapUsuario.data();
+                nivel = datos.nivel || nivel;
+                edad = datos.edad || edad;
+                madera = datos.madera || madera;
+                gomaDrive = datos.gomaDrive || gomaDrive;
+                gomaReves = datos.gomaReves || gomaReves;
+                recomendacion = datos.recomendacion || recomendacion;
+                historialClases = datos.historialClases || [];
+            } else if (esMiPerfil) {
+                await setDoc(refUsuario, {
+                    edad: "16",
+                    nivel: "Intermedio",
+                    madera: "Genérica",
+                    gomaDrive: "Genérica",
+                    gomaReves: "Genérica",
+                    recomendacion: "Mejorar desplazamiento y postura en servicio.",
+                    historialClases: [
+                        { fecha: "10/11/26", duracion: 1.5, estado: "Completada" },
+                        { fecha: "08/11/26", duracion: 2.0, estado: "Completada" }
+                    ]
+                }, { merge: true });
+
+                const nuevoSnap = await getDoc(refUsuario);
+                historialClases = nuevoSnap.data().historialClases;
+            }
+
+            let horasCalculadas = 0;
+            historialClases.forEach(clase => {
+                const estadoTexto = (clase.estado || "").toLowerCase();
+                const esGratis = estadoTexto.includes("gratis") || estadoTexto.includes("bonificada") || (clase.fecha && clase.fecha.toLowerCase().includes("gratis"));
+                if (!esGratis) {
+                    horasCalculadas += parseFloat(clase.duracion) || 0;
+                }
+            });
+
+            let horasActualesCiclo = horasCalculadas % 10;
+            if (horasActualesCiclo === 0 && horasCalculadas > 0) {
+                horasActualesCiclo = 10;
+            }
+
+            if (esMiPerfil) {
+                document.getElementById('miPerfilSub').innerHTML = `👤 Nombre: <strong>${escapeHTML(usuarioActual.displayName || "Alumno")}</strong>`;
+                document.getElementById('miPerfilNivelEdad').innerHTML = `🎯 Nivel: ${escapeHTML(nivel)} &nbsp;|&nbsp; 🎂 Edad: ${escapeHTML(String(edad))} años`;
+
+                document.getElementById('mioMadera').innerHTML = `<strong>Madera:</strong> ${escapeHTML(madera)}`;
+                document.getElementById('mioGomaDrive').innerHTML = `<strong>Goma Drive:</strong> ${escapeHTML(gomaDrive)}`;
+                document.getElementById('mioGomaReves').innerHTML = `<strong>Goma Revés:</strong> ${escapeHTML(gomaReves)}`;
+                document.getElementById('mioRecomendacion').textContent = recomendacion;
+
+                document.getElementById('editEdad').value = edad !== "--" ? edad : "";
+                document.getElementById('editNivel').value = nivel !== "Sin especificar" ? nivel : "";
+                document.getElementById('editMadera').value = madera !== "Sin especificar" ? madera : "";
+                document.getElementById('editGomaDrive').value = gomaDrive !== "Sin especificar" ? gomaDrive : "";
+                document.getElementById('editGomaReves').value = gomaReves !== "Sin especificar" ? gomaReves : "";
+
+                document.getElementById('perfilHorasNum').textContent = `${horasCalculadas} hs`;
+
+                let porcentaje = (horasActualesCiclo / 10) * 100;
+                if (porcentaje > 100) porcentaje = 100;
+                document.getElementById('barraProgreso').style.width = `${porcentaje}%`;
+
+                const textoMeta = document.getElementById('perfilTextoMeta');
+                if (horasCalculadas > 0 && horasCalculadas % 10 === 0) {
+                    let ciclosCompletados = horasCalculadas / 10;
+                    textoMeta.innerHTML = `¡Felicitaciones! Tenés ${ciclosCompletados} clase(s) bonificada(s) de 2 horas disponible(s) para reclamar con Mateo.`;
+                } else {
+                    let faltantes = 10 - horasActualesCiclo;
+                    textoMeta.innerHTML = `¡Faltan solo <strong>${faltantes} horas</strong> para tu próxima clase gratis! (Progreso ciclo: ${horasActualesCiclo}/10 hs)`;
+                }
+
+                const cuerpoTabla = document.getElementById('tablaHistorialCuerpo');
+                cuerpoTabla.innerHTML = "";
+                if(historialClases.length === 0) {
+                    cuerpoTabla.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #888;">No hay clases registradas aún.</td></tr>`;
+                } else {
+                    historialClases.forEach(c => {
+                        cuerpoTabla.innerHTML += `<tr><td>${escapeHTML(c.fecha)}</td><td>${c.duracion}h</td><td>${escapeHTML(c.estado)}</td></tr>`;
+                    });
+                }
+            } else {
+                document.getElementById('fichaNombre').textContent = nombreFallback;
+                document.getElementById('fichaNivelSub').textContent = `Categoría / Nivel: ${escapeHTML(nivel)}`;
+                document.getElementById('valMadera').textContent = madera;
+                document.getElementById('valGomaDrive').textContent = gomaDrive;
+                document.getElementById('valGomaReves').textContent = gomaReves;
+                document.getElementById('valNivel').textContent = nivel;
+                document.getElementById('valEdad').textContent = edad;
+                document.getElementById('fichaRecomendacion').textContent = recomendacion;
+            }
+        }
+
+        document.getElementById('formEditarPerfil').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!usuarioActual) return;
+
+            const nuevaEdad = document.getElementById('editEdad').value.trim();
+            const nuevoNivel = document.getElementById('editNivel').value.trim();
+            const nuevaMadera = document.getElementById('editMadera').value.trim();
+            const nuevaGomaDrive = document.getElementById('editGomaDrive').value.trim();
+            const nuevaGomaReves = document.getElementById('editGomaReves').value.trim();
+
+            try {
+                const refUsuario = doc(db, "usuarios", usuarioActual.uid);
+                await updateDoc(refUsuario, {
+                    edad: nuevaEdad,
+                    nivel: nuevoNivel,
+                    madera: nuevaMadera,
+                    gomaDrive: nuevaGomaDrive,
+                    gomaReves: nuevaGomaReves
+                });
+
+                cerrarModales();
+                alert("¡Datos actualizados con éxito!");
+                mostrarMiPerfil();
+            } catch(error) {
+                alert("Error al actualizar el perfil: " + error.message);
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            usuarioActual = user;
+            actualizarBarraAuth(user);
+
+            if (!resenasCargadasPorPrimeraVez) {
+                cargarResenas();
+                resenasCargadasPorPrimeraVez = true;
+            } else {
+                cargarResenas();
+            }
+        });
+
+        async function cargarResenas() {
+            const contenedor = document.getElementById('contenedorResenas');
+            if(!contenedor) return;
+            contenedor.innerHTML = "<p style='color: #666;'>Cargando opiniones...</p>";
+            
+            try {
+                const q = query(collection(db, "resenas"), orderBy("fecha", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                contenedor.innerHTML = "";
+                
+                if(querySnapshot.empty) {
+                    contenedor.innerHTML = "<p style='color: #666;'>Todavía no hay reseñas. ¡Iniciá sesión y sé el primero!</p>";
+                    return;
+                }
+
+                for (const documento of querySnapshot.docs) {
+                    const r = documento.data();
+                    const docId = documento.id;
+                    const numEstrellas = parseInt(r.estrellas) || 5;
+                    const estrellasTexto = "★".repeat(numEstrellas) + "☆".repeat(5 - numEstrellas);
+
+                    let fechaTexto = "";
+                    if (r.fecha && r.fecha.toDate) {
+                        const fechaOpciones = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+                        fechaTexto = r.fecha.toDate().toLocaleDateString('es-AR', fechaOpciones);
+                    }
+
+                    let nivelAlumno = "Alumno";
+                    if (r.userId) {
+                        try {
+                            const snapUsr = await getDoc(doc(db, "usuarios", r.userId));
+                            if (snapUsr.exists()) {
+                                nivelAlumno = snapUsr.data().nivel || "Alumno";
+                            }
+                        } catch(err) {}
+                    }
+
+                    const likes = r.likes || 0;
+                    const dislikes = r.dislikes || 0;
+                    const votantes = r.votantes || {};
+                    const miVoto = usuarioActual ? votantes[usuarioActual.uid] : null;
+                    const esMiResena = usuarioActual && usuarioActual.uid === r.userId;
+                    const nombreCompleto = `${r.nombre} ${r.apellido}`;
+
+                    const tarjeta = document.createElement('div');
+                    tarjeta.classList.add('tarjeta-resena');
+                    tarjeta.setAttribute('data-resena-id', docId);
+                    tarjeta.innerHTML = `
+                        <div class="tarjeta-header">
+                            <div>
+                                <div class="estrellas">${estrellasTexto}</div>
+                                <span class="autor" data-uid="${r.userId}" data-nombre="${escapeHTML(nombreCompleto)}">${escapeHTML(nombreCompleto)}</span>
+                                <span class="badge-nivel">${escapeHTML(nivelAlumno)}</span>
+                                ${fechaTexto ? `<span style="font-size: 0.75rem; color: #888; display: block; margin-top: 2px;">${fechaTexto}</span>` : ''}
+                            </div>
+                            ${esMiResena ? `<button class="btn-eliminar" data-id="${docId}">🗑️ Borrar</button>` : ''}
+                        </div>
+                        <p class="comentario">${escapeHTML(r.comentario)}</p>
+                        <div class="tarjeta-acciones">
+                            <button class="btn-like ${miVoto === 'like' ? 'activo' : ''}" data-id="${docId}">👍 <span class="contador-likes">${likes}</span></button>
+                            <button class="btn-dislike ${miVoto === 'dislike' ? 'activo' : ''}" data-id="${docId}">👎 <span class="contador-dislikes">${dislikes}</span></button>
+                        </div>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                }
+
+                document.querySelectorAll('.autor').forEach(span => {
+                    span.addEventListener('click', function() {
+                        const uidAjeno = this.getAttribute('data-uid');
+                        const nombreAjeno = this.getAttribute('data-nombre');
+                        if (uidAjeno) {
+                            mostrarPerfilAjeno(uidAjeno, nombreAjeno);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.btn-eliminar').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const id = this.getAttribute('data-id');
+                        if (confirm("¿Querés borrar tu reseña?")) {
+                            try {
+                                await deleteDoc(doc(db, "resenas", id));
+                                document.querySelector(`[data-resena-id="${id}"]`).remove();
+                            } catch(e) {
+                                alert("Error al borrar la reseña.");
+                            }
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.tarjeta-acciones button').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        if (!usuarioActual) {
+                            alert("Tenés que iniciar sesión para votar.");
+                            abrirModal('modalLogin');
+                            return;
+                        }
+
+                        const id = this.getAttribute('data-id');
+                        const tipoNuevo = this.classList.contains('btn-like') ? 'like' : 'dislike';
+                        const tarjetaEl = document.querySelector(`[data-resena-id="${id}"]`);
+                        const btnLike = tarjetaEl.querySelector('.btn-like');
+                        const btnDislike = tarjetaEl.querySelector('.btn-dislike');
+                        const spanLikes = btnLike.querySelector('.contador-likes');
+                        const spanDislikes = btnDislike.querySelector('.contador-dislikes');
+
+                        let likes = parseInt(spanLikes.textContent);
+                        let dislikes = parseInt(spanDislikes.textContent);
+
+                        const refDoc = doc(db, "resenas", id);
+                        const docSnap = await getDoc(refDoc);
+                        if (!docSnap.exists()) return;
+
+                        const data = docSnap.data();
+                        let votantes = data.votantes || {};
+                        const votoAnterior = votantes[usuarioActual.uid];
+
+                        if (votoAnterior === tipoNuevo) {
+                            if (tipoNuevo === 'like') { likes--; btnLike.classList.remove('activo'); }
+                            if (tipoNuevo === 'dislike') { dislikes--; btnDislike.classList.remove('activo'); }
+                            delete votantes[usuarioActual.uid];
+                        } else {
+                            if (votoAnterior === 'like') { likes--; btnLike.classList.remove('activo'); }
+                            if (votoAnterior === 'dislike') { dislikes--; btnDislike.classList.remove('activo'); }
+
+                            if (tipoNuevo === 'like') { likes++; btnLike.classList.add('activo'); }
+                            if (tipoNuevo === 'dislike') { dislikes++; btnDislike.classList.add('activo'); }
+
+                            votantes[usuarioActual.uid] = tipoNuevo;
+                        }
+
+                        spanLikes.textContent = likes;
+                        spanDislikes.textContent = dislikes;
+
+                        await updateDoc(refDoc, {
+                            likes: likes,
+                            dislikes: dislikes,
+                            votantes: votantes
+                        });
+                    });
+                });
+
+            } catch (e) {
+                contenedor.innerHTML = "<p style='color: #d9534f;'>Error al cargar las reseñas desde la nube.</p>";
+            }
+        }
+
+        const formResenaEl = document.getElementById('formResena');
+        if(formResenaEl) {
+            formResenaEl.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                if (!usuarioActual) return;
+
+                const btn = document.getElementById('btnEnviar');
+                btn.textContent = "Publicando...";
+                btn.disabled = true;
+
+                const estrellas = document.getElementById('estrellas').value;
+                const comentario = document.getElementById('comentario').value.trim();
+
+                const partesNombre = (usuarioActual.displayName || "Alumno").split(" ");
+                const nombre = partesNombre[0] || "Alumno";
+                const apellido = partesNombre.slice(1).join(" ") || "";
+
+                try {
+                    await addDoc(collection(db, "resenas"), {
+                        userId: usuarioActual.uid,
+                        nombre: nombre,
+                        apellido: apellido,
+                        estrellas: estrellas,
+                        comentario: comentario,
+                        likes: 0,
+                        dislikes: 0,
+                        votantes: {},
+                        fecha: serverTimestamp()
+                    });
+
+                    document.getElementById('comentario').value = "";
+                    alert('¡Reseña publicada con éxito!');
+                    cargarResenas();
+                } catch (e) {
+                    alert('Error al publicar reseña.');
+                } finally {
+                    btn.textContent = "Publicar Reseña";
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        document.getElementById('formRegistro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('regNombre').value.trim();
+            const apellido = document.getElementById('regApellido').value.trim();
+            const edad = document.getElementById('regEdad').value.trim();
+            const nivel = document.getElementById('regNivel').value.trim();
+            const madera = document.getElementById('regMadera').value.trim();
+            const gomaDrive = document.getElementById('regGomaDrive').value.trim();
+            const gomaReves = document.getElementById('regGomaReves').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, {
+                    displayName: `${nombre} ${apellido}`
+                });
+
+                await setDoc(doc(db, "usuarios", userCredential.user.uid), {
+                    edad: edad,
+                    nivel: nivel,
+                    madera: madera,
+                    gomaDrive: gomaDrive,
+                    gomaReves: gomaReves,
+                    recomendacion: "Mejorar desplazamiento y postura en servicio.",
+                    historialClases: [
+                        { fecha: "10/11/26", duracion: 1.5, estado: "Completada" }
+                    ]
+                });
+
+                cerrarModales();
+                alert('¡Cuenta creada e sesión iniciada!');
+            } catch (error) {
+                alert('Error al crear cuenta: ' + error.message);
+            }
+        });
+
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                cerrarModales();
+                alert('¡Sesión iniciada correctamente!');
+            } catch (error) {
+                alert('Email o contraseña incorrectos.');
+            }
+        });
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+    </script>
 </body>
 </html>
