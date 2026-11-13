@@ -40,7 +40,7 @@
             z-index: 1000;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .nav-logo { color: white; font-weight: 800; text-decoration: none; font-size: 1.1rem; cursor: pointer; }
+        .nav-logo { color: white; font-weight: 800; text-decoration: none; font-size: 1.1rem; cursor: pointer; white-space: nowrap; }
         .nav-right { display: flex; align-items: center; gap: 15px; }
         .nav-links { display: flex; gap: 20px; list-style: none; margin: 0; padding: 0; align-items: center; }
         .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
@@ -57,6 +57,7 @@
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
+            white-space: nowrap;
         }
         .btn-auth-secundario {
             background: rgba(255,255,255,0.1);
@@ -67,6 +68,7 @@
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
+            white-space: nowrap;
         }
         .btn-auth-secundario:hover { background: rgba(255,255,255,0.2); }
 
@@ -277,7 +279,6 @@
         }
         .btn-enviar-resena:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* MODALES OPTIMIZADOS PARA CELULARES (Con scroll propio y altura segura) */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -296,8 +297,8 @@
             border-radius: 20px;
             width: 100%;
             max-width: 400px;
-            max-height: 85vh; /* Altura máxima para que quepa en pantallas chicas */
-            overflow-y: auto; /* Permite hacer scroll vertical sin cortar nada */
+            max-height: 85vh;
+            overflow-y: auto;
             position: relative;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             box-sizing: border-box;
@@ -439,7 +440,7 @@
 
         .footer { background-color: #2a2d31; color: #6c757d; padding: 30px 10%; font-size: 0.8rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); box-sizing: border-box; }
 
-        /* AJUSTES FINOS PARA CELULARES Y PANTALLAS CHICAS */
+        /* AJUSTES PARA CELULARES Y PANTALLAS CHICAS */
         @media (max-width: 900px) {
             section, #vistaPerfil { padding: 50px 5%; }
             .ficha-grid-datos, .perfil-grid-dos-columnas { grid-template-columns: 1fr; }
@@ -451,8 +452,15 @@
             .banner-naranja { padding: 30px 20px; text-align: center; }
             .banner-naranja h2 { font-size: 2.2rem; }
             .final h2 { font-size: 2.5rem; }
+            
+            /* Oculta siempre los enlaces de navegación en celular y deja lugar limpio para Registro/Login */
             .navbar { padding: 12px 4%; }
-            .nav-links { display: none; }
+            .nav-links { display: none !important; }
+            .nav-logo { font-size: 0.95rem; }
+            .auth-bar { gap: 6px; }
+            .btn-auth-primario, .btn-auth-secundario { padding: 6px 10px; font-size: 0.78rem; }
+            .user-welcome { display: none; } /* Oculta el "Hola, Nombre" largo en celu para que entren bien los botones */
+
             .box-extra { flex-direction: column; text-align: center; gap: 10px; }
             .ficha-body { padding: 20px; }
             .ficha-header-bar { padding: 20px; }
@@ -823,7 +831,8 @@
             document.getElementById('vistaPrincipal').style.display = 'block';
             document.getElementById('seccionFinal').style.display = 'block';
             
-            document.getElementById('navLinksMenu').style.display = 'flex';
+            // Solo muestra los enlaces en pantallas grandes (mayores a 900px)
+            document.getElementById('navLinksMenu').style.display = window.innerWidth > 900 ? 'flex' : 'none';
             actualizarBarraAuth(usuarioActual);
 
             window.scrollTo(0, 0);
