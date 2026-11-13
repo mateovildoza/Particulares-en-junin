@@ -299,7 +299,7 @@
             background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;
         }
 
-        /* Pantalla de Perfil con fondo continuo para evitar destellos blancos */
+        /* Pantalla de Perfil */
         #vistaPerfil {
             display: none;
             padding: 140px 10% 80px 10%;
@@ -309,7 +309,6 @@
             text-align: left;
         }
 
-        /* Ficha Estilo Jugador (para cuando se ve un perfil ajeno) */
         .ficha-contenedor {
             max-width: 900px;
             margin: 0 auto;
@@ -353,7 +352,6 @@
         }
         .ficha-dato-item strong { color: #111; }
 
-        /* Contenedor Propio (Dos columnas) */
         .perfil-propio-layout {
             max-width: 1100px;
             margin: 0 auto;
@@ -568,15 +566,12 @@
 
     <!-- VISTA DE PERFIL -->
     <div id="vistaPerfil">
-        
-        <!-- FICHA DE JUGADOR (Para cuando se ve un perfil ajeno) -->
         <div id="contenedorPerfilAjeno" style="display: none;">
             <div class="ficha-contenedor">
                 <div class="ficha-header-bar">
                     <h2 id="fichaNombre">Cargando perfil...</h2>
                     <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Espere un momento</p>
                 </div>
-
                 <div class="ficha-body">
                     <div class="ficha-seccion-titulo">Datos Deportivos</div>
                     <div class="ficha-grid-datos">
@@ -585,20 +580,17 @@
                         <div class="ficha-dato-item"><strong>Goma Revés:</strong> <span id="valGomaReves">Cargando...</span></div>
                         <div class="ficha-dato-item"><strong>Nivel / Categoría:</strong> <span id="valNivel">Cargando...</span></div>
                     </div>
-
                     <div class="ficha-seccion-titulo">Datos Personales</div>
                     <div class="ficha-grid-datos">
                         <div class="ficha-dato-item"><strong>Edad:</strong> <span id="valEdad">-</span> años</div>
                         <div class="ficha-dato-item"><strong>Entrenador:</strong> Mateo Vildoza</div>
                     </div>
-
                     <div class="ficha-seccion-titulo">Objetivo / Enfoque Actual</div>
                     <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando información...</p>
                 </div>
             </div>
         </div>
 
-        <!-- MI PERFIL -->
         <div id="contenedorMiPerfil" style="display: none;" class="perfil-propio-layout">
             <div class="perfil-header-principal">
                 <div>
@@ -612,13 +604,11 @@
             </div>
 
             <div class="perfil-grid-dos-columnas">
-                <!-- Columna Izquierda: Progreso de Horas Grande -->
                 <div class="perfil-card-blanca" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏆 PROGRESO DE HORAS ACUMULADAS</h3>
                         <p style="margin: 0; font-size: 1.05rem; color: #555;">Total horas pagadas: <strong id="perfilHorasNum" style="color: var(--naranja); font-size: 1.3rem;">0 hs</strong></p>
                         <p style="margin: 6px 0 0 0; font-size: 0.9rem; color: #888;">Meta para clase bonificada: 10 horas</p>
-                        
                         <div class="barra-progreso-contenedor">
                             <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
                         </div>
@@ -626,18 +616,15 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Equipamiento y Recomendación -->
                 <div class="perfil-card-blanca" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 EQUIPAMIENTO Y OBJETIVO</h3>
                         <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioMadera"><strong>Madera:</strong> Cargando...</p>
                         <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioGomaDrive"><strong>Goma Drive:</strong> Cargando...</p>
                         <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> Cargando...</p>
-                        
                         <h3 style="margin: 15px 0 6px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
                         <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4;" id="mioRecomendacion">Cargando objetivo...</p>
                     </div>
-
                     <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; display: block; padding: 12px; margin-top: 25px; border-radius: 10px;">📅 Reservar Próxima Clase</a>
                 </div>
             </div>
@@ -658,10 +645,9 @@
                 </table>
             </div>
         </div>
-
     </div>
 
-    <!-- Modal Editar Perfil -->
+    <!-- Modales -->
     <div class="modal-overlay" id="modalEditarPerfil">
         <div class="modal-box">
             <button class="modal-cerrar" id="cerrarModalEditar">&times;</button>
@@ -692,7 +678,6 @@
         </div>
     </div>
 
-    <!-- Modal Login -->
     <div class="modal-overlay" id="modalLogin">
         <div class="modal-box">
             <button class="modal-cerrar" id="cerrarModalLogin">&times;</button>
@@ -711,7 +696,6 @@
         </div>
     </div>
 
-    <!-- Modal Registro -->
     <div class="modal-overlay" id="modalRegistro">
         <div class="modal-box">
             <button class="modal-cerrar" id="cerrarModalRegistro">&times;</button>
@@ -768,7 +752,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase optimizada para transiciones fluidas -->
+    <!-- Lógica de Firebase con actualización fluida y sin recargas de lista -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -789,6 +773,7 @@
         const db = getFirestore(app);
 
         let usuarioActual = null;
+        let resenasCargadasPorPrimera Vez = false;
 
         function abrirModal(id) {
             document.getElementById(id).style.display = 'flex';
@@ -853,7 +838,6 @@
         }
 
         async function cargarDatosPerfil(uidTarget, esMiPerfil, nombreFallback = "Alumno") {
-            // Mostrar la vista de perfil inmediatamente con textos de carga limpios
             document.getElementById('vistaPrincipal').style.display = 'none';
             document.getElementById('seccionFinal').style.display = 'none';
             document.getElementById('contenedorMiPerfil').style.display = esMiPerfil ? 'block' : 'none';
@@ -861,13 +845,11 @@
             document.getElementById('vistaPerfil').style.display = 'block';
             window.scrollTo(0, 0);
 
-            // Preparar navbar simplificada
             document.getElementById('navLinksMenu').style.display = 'none';
             document.getElementById('authBar').innerHTML = `
                 <button class="btn-auth-primario" onclick="mostrarVistaPrincipal()">← Volver al Inicio</button>
             `;
 
-            // Si es perfil ajeno, mostrar el nombre temporal de inmediato
             if (!esMiPerfil) {
                 document.getElementById('fichaNombre').textContent = nombreFallback;
                 document.getElementById('fichaNivelSub').textContent = "Cargando categoría...";
@@ -995,7 +977,6 @@
                 cerrarModales();
                 alert("¡Datos actualizados con éxito!");
                 mostrarMiPerfil();
-                cargarResenas();
             } catch(error) {
                 alert("Error al actualizar el perfil: " + error.message);
             }
@@ -1030,7 +1011,14 @@
                 document.getElementById('bloqueLoginRequerido').style.display = 'block';
                 mostrarVistaPrincipal();
             }
-            cargarResenas();
+
+            if (!resenasCargadasPorPrimera Vez) {
+                cargarResenas();
+                resenasCargadasPorPrimera Vez = true;
+            } else {
+                // Si ya estaban cargadas, solo refrescamos los estilos visuales de los botones de voto según el nuevo usuario
+                actualizarVotosVisuales();
+            }
         });
 
         async function cargarResenas() {
@@ -1079,6 +1067,7 @@
 
                     const tarjeta = document.createElement('div');
                     tarjeta.classList.add('tarjeta-resena');
+                    tarjeta.setAttribute('data-resena-id', docId);
                     tarjeta.innerHTML = `
                         <div class="tarjeta-header">
                             <div>
@@ -1091,13 +1080,14 @@
                         </div>
                         <p class="comentario">${escapeHTML(r.comentario)}</p>
                         <div class="tarjeta-acciones">
-                            <button class="btn-like ${miVoto === 'like' ? 'activo' : ''}" data-id="${docId}">👍 <span>${likes}</span></button>
-                            <button class="btn-dislike ${miVoto === 'dislike' ? 'activo' : ''}" data-id="${docId}">👎 <span>${dislikes}</span></button>
+                            <button class="btn-like ${miVoto === 'like' ? 'activo' : ''}" data-id="${docId}">👍 <span class="contador-likes">${likes}</span></button>
+                            <button class="btn-dislike ${miVoto === 'dislike' ? 'activo' : ''}" data-id="${docId}">👎 <span class="contador-dislikes">${dislikes}</span></button>
                         </div>
                     `;
                     contenedor.appendChild(tarjeta);
                 }
 
+                // Eventos de autor
                 document.querySelectorAll('.autor').forEach(span => {
                     span.addEventListener('click', function() {
                         const uidAjeno = this.getAttribute('data-uid');
@@ -1108,14 +1098,14 @@
                     });
                 });
 
+                // Eventos de eliminar reseña
                 document.querySelectorAll('.btn-eliminar').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const id = this.getAttribute('data-id');
                         if (confirm("¿Querés borrar tu reseña?")) {
                             try {
                                 await deleteDoc(doc(db, "resenas", id));
-                                alert("Reseña eliminada.");
-                                cargarResenas();
+                                document.querySelector(`[data-resena-id="${id}"]`).remove();
                             } catch(e) {
                                 alert("Error al borrar la reseña.");
                             }
@@ -1123,62 +1113,69 @@
                     });
                 });
 
-                async function manejarVoto(id, tipoNuevo) {
-                    if (!usuarioActual) {
-                        alert("Tenés que iniciar sesión para votar.");
-                        abrirModal('modalLogin');
-                        return;
-                    }
+                // Eventos de Likes y Dislikes con actualización INSTANTÁNEA (sin recargar la lista)
+                document.querySelectorAll('.tarjeta-acciones button').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        if (!usuarioActual) {
+                            alert("Tenés que iniciar sesión para votar.");
+                            abrirModal('modalLogin');
+                            return;
+                        }
 
-                    const refDoc = doc(db, "resenas", id);
-                    const docSnap = await getDoc(refDoc);
-                    if (!docSnap.exists()) return;
+                        const id = this.getAttribute('data-id');
+                        const tipoNuevo = this.classList.contains('btn-like') ? 'like' : 'dislike';
+                        const tarjetaEl = document.querySelector(`[data-resena-id="${id}"]`);
+                        const btnLike = tarjetaEl.querySelector('.btn-like');
+                        const btnDislike = tarjetaEl.querySelector('.btn-dislike');
+                        const spanLikes = btnLike.querySelector('.contador-likes');
+                        const spanDislikes = btnDislike.querySelector('.contador-dislikes');
 
-                    const data = docSnap.data();
-                    let likes = data.likes || 0;
-                    let dislikes = data.dislikes || 0;
-                    let votantes = data.votantes || {};
+                        let likes = parseInt(spanLikes.textContent);
+                        let dislikes = parseInt(spanDislikes.textContent);
 
-                    const votoAnterior = votantes[usuarioActual.uid];
+                        const refDoc = doc(db, "resenas", id);
+                        const docSnap = await getDoc(refDoc);
+                        if (!docSnap.exists()) return;
 
-                    if (votoAnterior === tipoNuevo) {
-                        if (tipoNuevo === 'like') likes--;
-                        if (tipoNuevo === 'dislike') dislikes--;
-                        delete votantes[usuarioActual.uid];
-                    } else {
-                        if (votoAnterior === 'like') likes--;
-                        if (votoAnterior === 'dislike') dislikes--;
+                        const data = docSnap.data();
+                        let votantes = data.votantes || {};
+                        const votoAnterior = votantes[usuarioActual.uid];
 
-                        if (tipoNuevo === 'like') likes++;
-                        if (tipoNuevo === 'dislike') dislikes++;
+                        // Actualización visual instantánea en la interfaz
+                        if (votoAnterior === tipoNuevo) {
+                            if (tipoNuevo === 'like') { likes--; btnLike.classList.remove('activo'); }
+                            if (tipoNuevo === 'dislike') { dislikes--; btnDislike.classList.remove('activo'); }
+                            delete votantes[usuarioActual.uid];
+                        } else {
+                            if (votoAnterior === 'like') { likes--; btnLike.classList.remove('activo'); }
+                            if (votoAnterior === 'dislike') { dislikes--; btnDislike.classList.remove('activo'); }
 
-                        votantes[usuarioActual.uid] = tipoNuevo;
-                    }
+                            if (tipoNuevo === 'like') { likes++; btnLike.classList.add('activo'); }
+                            if (tipoNuevo === 'dislike') { dislikes++; btnDislike.classList.add('activo'); }
 
-                    await updateDoc(refDoc, {
-                        likes: likes,
-                        dislikes: dislikes,
-                        votantes: votantes
-                    });
+                            votantes[usuarioActual.uid] = tipoNuevo;
+                        }
 
-                    cargarResenas();
-                }
+                        spanLikes.textContent = likes;
+                        spanDislikes.textContent = dislikes;
 
-                document.querySelectorAll('.btn-like').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        manejarVoto(this.getAttribute('data-id'), 'like');
-                    });
-                });
-
-                document.querySelectorAll('.btn-dislike').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        manejarVoto(this.getAttribute('data-id'), 'dislike');
+                        // Guardar en Firestore en segundo plano sin alterar la vista
+                        await updateDoc(refDoc, {
+                            likes: likes,
+                            dislikes: dislikes,
+                            votantes: votantes
+                        });
                     });
                 });
 
             } catch (e) {
                 contenedor.innerHTML = "<p style='color: #d9534f;'>Error al cargar las reseñas desde la nube.</p>";
             }
+        }
+
+        function actualizarVotosVisuales() {
+            // Solo actualiza los estados activos de los botones si cambia la sesión sin recargar todo
+            cargarResenas();
         }
 
         document.getElementById('formResena').addEventListener('submit', async function(e) {
@@ -1210,7 +1207,7 @@
                 });
 
                 document.getElementById('comentario').value = "";
-                alert('¡Reseña publicada con éxito en todos los dispositivos!');
+                alert('¡Reseña publicada con éxito!');
                 cargarResenas();
             } catch (e) {
                 alert('Error al publicar reseña.');
