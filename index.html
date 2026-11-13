@@ -512,7 +512,7 @@
             <div class="banner-naranja">
                 <span class="tag-opcional">SERVICIO OPCIONAL</span>
                 <h2>Análisis personalizado de juego</h2>
-                <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
+                <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabalhar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
             </div>
         </section>
 
@@ -768,7 +768,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Limpieza Definitiva -->
+    <!-- Lógica de Firebase y Limpieza Instantánea de Perfiles -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -807,7 +807,11 @@
         });
 
         window.mostrarVistaPrincipal = function() {
+            // Ocultar por completo los contenedores de perfil para evitar solapamientos
+            document.getElementById('contenedorMiPerfil').style.display = 'none';
+            document.getElementById('contenedorPerfilAjeno').style.display = 'none';
             document.getElementById('vistaPerfil').style.display = 'none';
+
             document.getElementById('vistaPrincipal').style.display = 'block';
             document.getElementById('seccionFinal').style.display = 'block';
             
@@ -851,8 +855,12 @@
         }
 
         async function cargarDatosPerfil(uidTarget, esMiPerfil, nombreFallback = "Alumno") {
+            // Ocultar vista principal y resetear contenedores antes de cargar el nuevo perfil
             document.getElementById('vistaPrincipal').style.display = 'none';
             document.getElementById('seccionFinal').style.display = 'none';
+            document.getElementById('contenedorMiPerfil').style.display = 'none';
+            document.getElementById('contenedorPerfilAjeno').style.display = 'none';
+            
             document.getElementById('vistaPerfil').style.display = 'block';
             window.scrollTo(0, 0);
 
