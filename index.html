@@ -370,7 +370,7 @@
         }
         .ficha-dato-item strong { color: #111; }
 
-        /* Contenedor Propio (Dos columnas para Mi Perfil) */
+        /* Contenedor Propio (Dos columnas invertidas: Horas a la izquierda, Material a la derecha) */
         .perfil-propio-layout {
             max-width: 1100px;
             margin: 0 auto;
@@ -385,7 +385,7 @@
         }
         .perfil-grid-dos-columnas {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 25px;
         }
         .perfil-card-blanca {
@@ -529,7 +529,7 @@
             <div class="banner-naranja">
                 <span class="tag-opcional">SERVICIO OPCIONAL</span>
                 <h2>Análisis personalizado de juego</h2>
-                <p>Además de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
+                <p>Além de las clases, ofrezco un análisis personalizado de tu juego. Te anoto y digo cuáles son tus errores más frecuentes, qué puntos fuertes tenés, qué necesitás trabajar, ejercicios específicos para eso y objetivos concretos para avanzar. Es opcional, pero sirve para mejorar más rápido.</p>
             </div>
         </section>
 
@@ -583,10 +583,10 @@
         </section>
     </div>
 
-    <!-- VISTA DE PERFIL (Dinámica: Ficha para ajenos, Dos columnas para propio) -->
+    <!-- VISTA DE PERFIL -->
     <div id="vistaPerfil">
         
-        <!-- DISEÑO 1: FICHA DE JUGADOR (Para cuando se ve un perfil ajeno) -->
+        <!-- FICHA DE JUGADOR (Para cuando se ve un perfil ajeno) -->
         <div id="contenedorPerfilAjeno" style="display: none;">
             <div class="ficha-contenedor">
                 <div class="ficha-header-bar">
@@ -620,12 +620,13 @@
             </div>
         </div>
 
-        <!-- DISEÑO 2: MI PERFIL (Dos columnas con Equipamiento, Progreso e Historial) -->
+        <!-- MI PERFIL (Dos columnas: Izquierda Horas Grandes, Derecha Equipamiento y Recomendación) -->
         <div id="contenedorMiPerfil" style="display: none;" class="perfil-propio-layout">
             <div class="perfil-header-principal">
                 <div>
-                    <h2 style="font-size: 2.3rem; margin: 0 0 5px 0; font-weight: 900;" id="miPerfilNombre">MI PERFIL</h2>
-                    <p style="color: #666; font-size: 1.05rem; margin: 0;" id="miPerfilSub">Panel de Alumno</p>
+                    <h2 style="font-size: 2.3rem; margin: 0 0 5px 0; font-weight: 900;" id="miPerfilNombre">MI PERFIL DE ALUMNO</h2>
+                    <p style="color: #666; font-size: 1.05rem; margin: 0;" id="miPerfilSub">👤 Nombre: Cargando...</p>
+                    <p style="color: #666; font-size: 0.95rem; margin: 3px 0 0 0;" id="miPerfilNivelEdad">🎯 Nivel: Cargando...</p>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <button class="btn-auth-primario" id="btnAbrirEditarPerfil" style="padding: 10px 16px;">✏️ Editar mis datos</button>
@@ -634,33 +635,33 @@
             </div>
 
             <div class="perfil-grid-dos-columnas">
-                <!-- Columna Izquierda: Datos y Equipamiento -->
-                <div class="perfil-card-blanca">
-                    <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 TUS DATOS Y EQUIPAMIENTO</h3>
-                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioEdad"><strong>Edad:</strong> -- años</p>
-                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioNivel"><strong>Nivel / Categoría:</strong> --</p>
-                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioMadera"><strong>Madera:</strong> --</p>
-                    <p style="margin: 0 0 10px 0; font-size: 0.95rem; color: #555;" id="mioGomaDrive"><strong>Goma Drive:</strong> --</p>
-                    <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> --</p>
-                    
-                    <h3 style="margin: 20px 0 8px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
-                    <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.5;" id="mioRecomendacion">Cargando objetivo...</p>
-                </div>
-
-                <!-- Columna Derecha: Progreso de Horas y Reserva -->
-                <div style="display: flex; flex-direction: column; gap: 25px;">
-                    <div class="perfil-card-blanca">
-                        <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #222;">🏆 PROGRESO DE HORAS</h3>
-                        <p style="margin: 0; font-size: 1rem; color: #555;">Total pagadas: <strong id="perfilHorasNum" style="color: var(--naranja);">0 hs</strong></p>
-                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #888;">Meta para clase bonificada: 10 horas</p>
+                <!-- Columna Izquierda: Progreso de Horas Grande -->
+                <div class="perfil-card-blanca" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏆 PROGRESO DE HORAS ACUMULADAS</h3>
+                        <p style="margin: 0; font-size: 1.05rem; color: #555;">Total horas pagadas: <strong id="perfilHorasNum" style="color: var(--naranja); font-size: 1.3rem;">0 hs</strong></p>
+                        <p style="margin: 6px 0 0 0; font-size: 0.9rem; color: #888;">Meta para clase bonificada: 10 horas</p>
                         
                         <div class="barra-progreso-contenedor">
                             <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
                         </div>
-                        <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando...</p>
+                        <p style="margin: 12px 0 0 0; font-size: 0.95rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando...</p>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Equipamiento y Recomendación -->
+                <div class="perfil-card-blanca" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #222;">🏓 EQUIPAMIENTO Y OBJETIVO</h3>
+                        <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioMadera"><strong>Madera:</strong> --</p>
+                        <p style="margin: 0 0 8px 0; font-size: 0.95rem; color: #555;" id="mioGomaDrive"><strong>Goma Drive:</strong> --</p>
+                        <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> --</p>
+                        
+                        <h3 style="margin: 15px 0 6px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
+                        <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4;" id="mioRecomendacion">Cargando objetivo...</p>
                     </div>
 
-                    <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; display: block; padding: 16px; font-size: 1rem; border-radius: 12px;">📅 Reservar Clase con Mateo</a>
+                    <a href="https://wa.me/5492364543539" target="_blank" rel="noopener noreferrer" class="btn-auth-primario" style="text-align: center; text-decoration: none; display: block; padding: 12px; margin-top: 25px; border-radius: 10px;">📅 Reservar Próxima Clase</a>
                 </div>
             </div>
 
@@ -790,7 +791,7 @@
         Mateo Vildoza • Clases de Tenis de Mesa
     </footer>
 
-    <!-- Lógica de Firebase y Renderizado Condicional de Perfiles -->
+    <!-- Lógica de Firebase y Renderizado Condicional -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -904,9 +905,9 @@
                 contenedorAjeno.style.display = 'none';
                 contenedorPropio.style.display = 'block';
 
-                document.getElementById('miPerfilNombre').textContent = `MI PERFIL — ${escapeHTML(usuarioActual.displayName || "Alumno")}`;
-                document.getElementById('mioEdad').innerHTML = `<strong>Edad:</strong> ${escapeHTML(String(edad))} años`;
-                document.getElementById('mioNivel').innerHTML = `<strong>Nivel / Categoría:</strong> ${escapeHTML(nivel)}`;
+                document.getElementById('miPerfilSub').innerHTML = `👤 Nombre: <strong>${escapeHTML(usuarioActual.displayName || "Alumno")}</strong>`;
+                document.getElementById('miPerfilNivelEdad').innerHTML = `🎯 Nivel: ${escapeHTML(nivel)} &nbsp;|&nbsp; 🎂 Edad: ${escapeHTML(String(edad))} años`;
+
                 document.getElementById('mioMadera').innerHTML = `<strong>Madera:</strong> ${escapeHTML(madera)}`;
                 document.getElementById('mioGomaDrive').innerHTML = `<strong>Goma Drive:</strong> ${escapeHTML(gomaDrive)}`;
                 document.getElementById('mioGomaReves').innerHTML = `<strong>Goma Revés:</strong> ${escapeHTML(gomaReves)}`;
