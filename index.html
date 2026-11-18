@@ -724,6 +724,7 @@
                     <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn-enviar-resena">Entrar</button>
+                <p style="text-align: center; margin: 16px 0 0 0;"><a href="#" id="linkOlvide" style="color: var(--naranja); font-weight: 600; font-size: 0.9rem; text-decoration: none;">¿Olvidaste tu contraseña?</a></p>
             </form>
         </div>
     </div>
@@ -740,26 +741,6 @@
                 <div class="campo-grupo">
                     <label for="regApellido">Apellido</label>
                     <input type="text" id="regApellido" placeholder="Ej: Coppola" required>
-                </div>
-                <div class="campo-grupo">
-                    <label for="regEdad">Edad</label>
-                    <input type="number" id="regEdad" placeholder="Ej: 16" required>
-                </div>
-                <div class="campo-grupo">
-                    <label for="regNivel">Nivel o Categoría (TMT / FETEMBA)</label>
-                    <input type="text" id="regNivel" placeholder="Ej: Intermedio - Cat. 3ra TMT" required>
-                </div>
-                <div class="campo-grupo">
-                    <label for="regMadera">Madera</label>
-                    <input type="text" id="regMadera" placeholder="Ej: Nittaku Acoustic Carbon" required>
-                </div>
-                <div class="campo-grupo">
-                    <label for="regGomaDrive">Goma de Drive</label>
-                    <input type="text" id="regGomaDrive" placeholder="Ej: Nittaku Genextion V2C" required>
-                </div>
-                <div class="campo-grupo">
-                    <label for="regGomaReves">Goma de Revés</label>
-                    <input type="text" id="regGomaReves" placeholder="Ej: Victas Ventus Extra" required>
                 </div>
                 <div class="campo-grupo">
                     <label for="regEmail">Correo electrónico</label>
@@ -787,7 +768,7 @@
     <!-- Lógica de JavaScript y Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, setDoc, doc, getDoc, deleteDoc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -1254,11 +1235,6 @@
             e.preventDefault();
             const nombre = document.getElementById('regNombre').value.trim();
             const apellido = document.getElementById('regApellido').value.trim();
-            const edad = document.getElementById('regEdad').value.trim();
-            const nivel = document.getElementById('regNivel').value.trim();
-            const madera = document.getElementById('regMadera').value.trim();
-            const gomaDrive = document.getElementById('regGomaDrive').value.trim();
-            const gomaReves = document.getElementById('regGomaReves').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
 
@@ -1271,17 +1247,12 @@
                 await setDoc(doc(db, "usuarios", userCredential.user.uid), {
                     nombre: `${nombre} ${apellido}`,
                     email: email,
-                    edad: edad,
-                    nivel: nivel,
-                    madera: madera,
-                    gomaDrive: gomaDrive,
-                    gomaReves: gomaReves,
                     recomendacion: "Hay que tener una clase para esto",
                     historialClases: [ ]
                 });
 
                 cerrarModales();
-                alert('¡Cuenta creada e sesión iniciada!');
+                alert('¡Cuenta creada y sesión iniciada!');
             } catch (error) {
                 alert('Error al crear cuenta: ' + error.message);
             }
@@ -1298,6 +1269,21 @@
                 alert('¡Sesión iniciada correctamente!');
             } catch (error) {
                 alert('Email o contraseña incorrectos.');
+            }
+        });
+
+        document.getElementById('linkOlvide').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            if (!email) {
+                alert('Escribí tu correo arriba y volvé a tocar "¿Olvidaste tu contraseña?".');
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert('Si ese correo tiene una cuenta, te enviamos un mail para crear una contraseña nueva. Revisá también la carpeta de spam.');
+            } catch (error) {
+                alert('No pudimos enviar el mail. Revisá que el correo esté bien escrito.');
             }
         });
 
