@@ -939,11 +939,8 @@
                     madera: "Genérica",
                     gomaDrive: "Genérica",
                     gomaReves: "Genérica",
-                    recomendacion: "Mejorar desplazamiento y postura en servicio.",
-                    historialClases: [
-                        { fecha: "10/11/26", duracion: 1.5, estado: "Completada" },
-                        { fecha: "08/11/26", duracion: 2.0, estado: "Completada" }
-                    ]
+                    recomendacion: "Hay que tener una clase para esto",
+                    historialClases: [ ]
                 }, { merge: true });
 
                 const nuevoSnap = await getDoc(refUsuario);
@@ -1264,15 +1261,15 @@
                 });
 
                 await setDoc(doc(db, "usuarios", userCredential.user.uid), {
+                    nombre: `${nombre} ${apellido}`,
+                    email: email,
                     edad: edad,
                     nivel: nivel,
                     madera: madera,
                     gomaDrive: gomaDrive,
                     gomaReves: gomaReves,
-                    recomendacion: "Mejorar desplazamiento y postura en servicio.",
-                    historialClases: [
-                        { fecha: "10/11/26", duracion: 1.5, estado: "Completada" }
-                    ]
+                    recomendacion: "Hay que tener una clase para esto",
+                    historialClases: [ ]
                 });
 
                 cerrarModales();
