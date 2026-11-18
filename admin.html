@@ -135,10 +135,7 @@
 
         <!-- Cuenta sin permisos -->
         <section id="vistaSinAcceso" class="card angosta" hidden>
-            <h2>Esta cuenta no es de administrador</h2>
-            <p>Tu UID es:</p>
-            <p><code id="miUid"></code></p>
-            <p class="sub">Si es tu cuenta, copiá ese código y pegalo en este archivo (<code>admin.html</code>), en la línea que dice <code>ADMIN_UID</code>. Después tenés que agregar el mismo UID en las reglas de Firestore.</p>
+            <h2>Esta cuenta no tiene acceso al panel</h2>
         </section>
 
         <!-- Lista de alumnos -->
@@ -230,7 +227,7 @@
             measurementId: "G-FYHELSC70E"
         };
 
-        // Pegá acá tu UID de administrador (te lo muestra esta página la primera vez que entrás).
+        // UID de la cuenta de administrador.
         const ADMIN_UID = "XK7OlxiZkocjPVRdEwlflrtpmes1";
 
         const app = initializeApp(firebaseConfig);
@@ -274,7 +271,6 @@
             $('btnSalir').hidden = !user;
             if (!user) { mostrar('vistaLogin'); return; }
             if (user.uid !== ADMIN_UID) {
-                $('miUid').textContent = user.uid;
                 mostrar('vistaSinAcceso');
                 return;
             }
