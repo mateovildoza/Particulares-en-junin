@@ -107,7 +107,7 @@
         }
 
         .hero h1 { font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin: 0 0 20px 0; max-width: 900px; }
-        .hero h1 span { color: var(--naranja); font-style: italic; }
+        .hero h1 span { color: var(--naranja); font-: italic; }
         .hero p { font-size: 1.2rem; max-width: 700px; margin-bottom: 40px; opacity: 0.9; }
 
         .btn-whatsapp {
@@ -521,6 +521,24 @@
             .box-extra { flex-direction: column; text-align: center; gap: 10px; }
             .ficha-body { padding: 20px; }
             .ficha-header-bar { padding: 20px; }
+            
+            .logros-lista {
+            list-style: none;
+            padding: 0;
+            margin: 25px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+}
+.logros-lista li {
+    background: #f8f9fa;
+    border-left: 4px solid var(--naranja);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #222;
+}
         }
     </style>
 </head>
@@ -558,14 +576,22 @@
             <a href="https://wa.me/5492364543539?text=Hola%20Mate%2C%20quiero%20consultar%20por%20clases%20de%20tenis%20de%20mesa" target="_blank" rel="noopener noreferrer" class="btn-whatsapp link-whatsapp-medible">Escribime por WhatsApp</a>
         </section>
 
-        <section class="bio">
-            <div class="bio-content">
-                <h2>Me llamo Mateo Vildoza.</h2>
-                <p>Juego al tenis de mesa y compito frecuentemente en torneos en Junín, Pergamino, Rosario y Buenos Aires. Compito en categoría 2da en TMT y 1ra FETEMBA.</p>
-                <p>Me enfoco mucho en el entrenamiento técnico, es algo que vengo trabajando intensamente. Las clases que doy son particulares, individuales y personalizadas — las adapto a cada jugador.</p>
-            </div>
-            <img src="comomellamo2.jpeg" loading="lazy" class="bio-img" alt="Mateo Vildoza">
-        </section>
+      <section class="bio">
+    <div class="bio-content">
+        <h2>Me llamo Mateo Vildoza.</h2>
+        <p>Juego al tenis de mesa y compito frecuentemente en torneos en Junín, Pergamino, Rosario y Buenos Aires. Compito en categoría 2da en TMT y 1ra FETEMBA.</p>
+        <p>Me enfoco mucho en el entrenamiento técnico, es algo que vengo trabajando intensamente. Las clases que doy son particulares, individuales y personalizadas — las adapto a cada jugador.</p>
+        
+        <ul class="logros-lista">
+            <li>🥇 Medalla de Oro — Juegos Bonaerenses U18 (2026)</li>
+            <li>🏆 Campeón Nacional — Dobles U15</li>
+            <li>🥈 Subcampeón Nacional — Equipos U15</li>
+            <li>🥉 3° Puesto Nacional — Dobles U19</li>
+            <li>🇦🇷 Participación en Campamento DAR (Desarrollo al Alto Rendimiento) — Salta</li>
+        </ul>
+    </div>
+    <img src="comomellamo2.jpeg" loading="lazy" class="bio-img" alt="Mateo Vildoza">
+    </section>
 
         <section id="clases" class="seccion-blanca">
             <span class="icon-naranja">🎯</span>
