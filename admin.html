@@ -142,6 +142,7 @@
         <section id="vistaLista" hidden>
             <h2>Alumnos</h2>
             <p class="sub">Tocá "Ver / editar" para cambiar sus datos, su objetivo y sus clases.</p>
+            <p><button class="btn chico suave" id="btnVerResenas" type="button">Ver reseñas</button></p>
             <div class="barra">
                 <input type="search" id="buscar" placeholder="Buscar por nombre o nivel" aria-label="Buscar alumno">
             </div>
@@ -195,9 +196,19 @@
                         <textarea id="edObjetivo" rows="3" placeholder="Ej: Mejorar desplazamiento y postura en servicio."></textarea>
                     </div>
 
+                    <div class="campo">
+                        <label for="edProxima">Próxima clase (la ve el alumno en su perfil)</label>
+                        <input type="text" id="edProxima" placeholder="Ej: Jueves 21/11 a las 18:00">
+                    </div>
+
+                    <div class="campo">
+                        <label for="edNota">Nota para el alumno (la ve destacada en su perfil)</label>
+                        <textarea id="edNota" rows="2" placeholder="Ej: Para la próxima, practicá el saque con efecto"></textarea>
+                    </div>
+
                     <h3 style="margin: 28px 0 8px;">Clases</h3>
                     <table class="clases-tabla">
-                        <thead><tr><th>Fecha</th><th>Horas</th><th>Estado</th><th></th></tr></thead>
+                        <thead><tr><th>Fecha</th><th>Horas</th><th>Estado</th><th>Nota de esa clase</th><th></th></tr></thead>
                         <tbody id="clasesCuerpo"></tbody>
                     </table>
                     <p class="total" id="edTotal"></p>
@@ -210,12 +221,19 @@
                 </form>
             </div>
         </section>
+        <!-- Reseñas -->
+        <section id="vistaResenas" hidden>
+            <p><button class="btn chico suave" id="btnVolverDeResenas" type="button">Volver a la lista</button></p>
+            <h2>Reseñas</h2>
+            <p class="sub">Si hay una reseña que quieras sacar, tocá "Borrar". No se puede deshacer.</p>
+            <div id="resenasLista"></div>
+        </section>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB3ZY3m-KiGs6BW3tTCdqw-aES24N0nP_k",
@@ -235,7 +253,7 @@
         const db = getFirestore(app);
 
         const $ = (id) => document.getElementById(id);
-        const VISTAS = ['vistaLogin', 'vistaSinAcceso', 'vistaLista', 'vistaEditar'];
+        const VISTAS = ['vistaLogin', 'vistaSinAcceso', 'vistaLista', 'vistaEditar', 'vistaResenas'];
         const ESTADOS = ['Completada', 'Clase gratis (bonificada)'];
 
         let alumnos = [];
@@ -349,6 +367,8 @@
             $('edGomaDrive').value = d.gomaDrive || '';
             $('edGomaReves').value = d.gomaReves || '';
             $('edObjetivo').value = d.recomendacion || '';
+            $('edProxima').value = d.proximaClase || '';
+            $('edNota').value = d.notaClase || '';
             renderClases();
             mostrar('vistaEditar');
         }
@@ -363,6 +383,7 @@
                     <td><select data-i="${i}" data-k="estado" aria-label="Estado de la clase">
                         ${opciones.map(o => `<option ${o === c.estado ? 'selected' : ''}>${escapeHTML(o)}</option>`).join('')}
                     </select></td>
+                    <td><input data-i="${i}" data-k="nota" value="${escapeHTML(c.nota || '')}" placeholder="Ej: hoy trabajamos el servicio" aria-label="Nota de la clase"></td>
                     <td><button type="button" class="btn chico suave" data-quitar="${i}" aria-label="Quitar clase">Quitar</button></td>
                 </tr>`;
             }).join('');
@@ -395,6 +416,36 @@
             renderClases();
         });
 
+        // ---------- Reseñas ----------
+        async function cargarResenasAdmin() {
+            const cont = $('resenasLista');
+            cont.innerHTML = '<p class="sub">Cargando...</p>';
+            try {
+                const snap = await getDocs(query(collection(db, 'resenas'), orderBy('fecha', 'desc')));
+                cont.innerHTML = snap.empty ? '<p class="sub">Todavía no hay reseñas.</p>' : snap.docs.map(d => {
+                    const r = d.data();
+                    const n = parseInt(r.estrellas) || 5;
+                    const fecha = r.fecha && r.fecha.toDate ? r.fecha.toDate().toLocaleDateString('es-AR') : '';
+                    return `<div class="card" style="margin-bottom: 12px;">
+                        <div style="color: #f59e0b;">${'★'.repeat(n)}${'☆'.repeat(5 - n)}</div>
+                        <strong>${escapeHTML(`${r.nombre || ''} ${r.apellido || ''}`.trim())}</strong> <small>${escapeHTML(fecha)}</small>
+                        <p style="margin: 8px 0 12px;">${escapeHTML(r.comentario)}</p>
+                        <button class="btn chico suave" data-borrar="${escapeHTML(d.id)}">Borrar</button>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                cont.innerHTML = `<p class="sub">No se pudieron cargar las reseñas (${escapeHTML(err.message)}).</p>`;
+            }
+        }
+        $('btnVerResenas').addEventListener('click', () => { mostrar('vistaResenas'); cargarResenasAdmin(); });
+        $('btnVolverDeResenas').addEventListener('click', () => mostrar('vistaLista'));
+        $('resenasLista').addEventListener('click', async (e) => {
+            const b = e.target.closest('button[data-borrar]');
+            if (!b || !confirm('¿Borrar esta reseña? No se puede deshacer.')) return;
+            try { await deleteDoc(doc(db, 'resenas', b.dataset.borrar)); cargarResenasAdmin(); }
+            catch (err) { alert('No se pudo borrar: ' + err.message); }
+        });
+
         $('btnVolverLista').addEventListener('click', () => mostrar('vistaLista'));
         $('btnCancelar').addEventListener('click', () => mostrar('vistaLista'));
 
@@ -411,10 +462,13 @@
                 gomaDrive: $('edGomaDrive').value.trim(),
                 gomaReves: $('edGomaReves').value.trim(),
                 recomendacion: $('edObjetivo').value.trim(),
+                proximaClase: $('edProxima').value.trim(),
+                notaClase: $('edNota').value.trim(),
                 historialClases: actual.clases.map(c => ({
                     fecha: c.fecha || '',
                     duracion: parseFloat(c.duracion) || 0,
-                    estado: c.estado || ESTADOS[0]
+                    estado: c.estado || ESTADOS[0],
+                    ...(c.nota ? { nota: c.nota } : {})
                 }))
             };
             const nombre = $('edNombre').value.trim();
