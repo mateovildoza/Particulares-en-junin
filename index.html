@@ -1040,7 +1040,15 @@
             }
         });
 
+        let uidAnterior;
+        window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });
         onAuthStateChanged(auth, (user) => {
+        const uidNuevo = user ? user.uid : null;
+        if (uidAnterior !== undefined && uidAnterior !== uidNuevo) {
+        usuarioActual = user;
+        mostrarVistaPrincipal();
+    }
+    uidAnterior = uidNuevo;
             usuarioActual = user;
             actualizarBarraAuth(user);
 
