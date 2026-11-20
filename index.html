@@ -1183,6 +1183,22 @@
             }
         });
 
+        // Si alguien entra y todavía no tiene perfil guardado (se registró hace tiempo), se lo crea para que aparezca en el panel
+        async function asegurarPerfil(user) {
+            try {
+                const ref = doc(db, "usuarios", user.uid);
+                const snap = await getDoc(ref);
+                if (!snap.exists()) {
+                    await setDoc(ref, {
+                        nombre: user.displayName || "",
+                        email: user.email || "",
+                        recomendacion: "Hay que tener una clase para esto",
+                        historialClases: []
+                    });
+                }
+            } catch (e) {}
+        }
+
         let uidAnterior;
         window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });
         onAuthStateChanged(auth, (user) => {
@@ -1194,6 +1210,7 @@
             uidAnterior = uidNuevo;
             usuarioActual = user;
             actualizarBarraAuth(user);
+            if (user) asegurarPerfil(user);
 
             if (!resenasCargadasPorPrimeraVez) {
                 cargarResenas();

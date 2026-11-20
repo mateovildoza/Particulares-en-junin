@@ -233,7 +233,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB3ZY3m-KiGs6BW3tTCdqw-aES24N0nP_k",
@@ -324,6 +324,11 @@
                     });
                 }
                 alumnos = snapUsuarios.docs.map(d => ({ id: d.id, data: d.data() }));
+                // Gente que dejó una reseña pero todavía no tiene perfil guardado
+                const conPerfil = new Set(alumnos.map(x => x.id));
+                Object.keys(nombresDeResenas).forEach(uid => {
+                    if (!conPerfil.has(uid)) alumnos.push({ id: uid, data: {}, sinPerfil: true });
+                });
                 renderLista();
             } catch (err) {
                 $('listaCuerpo').innerHTML = `<tr><td colspan="5">No se pudo cargar la lista (${escapeHTML(err.message)}). Revisá que las reglas de Firestore permitan leer la colección "usuarios" con tu UID.</td></tr>`;
@@ -338,7 +343,7 @@
 
             $('listaCuerpo').innerHTML = filas.length ? filas.map(a => `
                 <tr>
-                    <td>${escapeHTML(nombreDe(a))}<small>${escapeHTML(a.id.slice(0, 8))}…</small></td>
+                    <td>${escapeHTML(nombreDe(a))}<small>${escapeHTML(a.id.slice(0, 8))}…</small>${a.sinPerfil ? '<small>⚠️ Sin perfil todavía: cargale los datos con "Ver / editar"</small>' : ''}</td>
                     <td>${escapeHTML(a.data.nivel || '-')}</td>
                     <td>${escapeHTML(a.data.edad || '-')}</td>
                     <td>${horasPagadas(a.data.historialClases)} hs</td>
@@ -475,9 +480,10 @@
             if (nombre) datos.nombre = nombre;
 
             try {
-                await updateDoc(doc(db, 'usuarios', actual.id), datos);
+                await setDoc(doc(db, 'usuarios', actual.id), datos, { merge: true });
                 const alumno = alumnos.find(a => a.id === actual.id);
                 alumno.data = { ...alumno.data, ...datos };
+                delete alumno.sinPerfil;
                 renderLista();
                 mostrar('vistaLista');
             } catch (err) {
