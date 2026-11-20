@@ -17,6 +17,7 @@
     <style>
         :root {
             --naranja: #f05423;
+            --verde: #22c55e;
             --fondo-oscuro: #1c2128;
             --tarjeta-oscura: #2d333b;
             --texto-gris: #adb5bd;
@@ -111,8 +112,8 @@
         .hero p { font-size: 1.2rem; max-width: 700px; margin-bottom: 40px; opacity: 0.9; }
 
         .btn-whatsapp {
-            background-color: var(--naranja);
-            color: white;
+            background-color: var(--verde);
+            color: #052e16;
             padding: 16px 32px;
             border-radius: 50px;
             text-decoration: none;
@@ -170,7 +171,7 @@
         .como-trabajo { display: flex; align-items: center; gap: 80px; text-align: left; background: white; }
 
         .analisis { padding: 80px 10%; box-sizing: border-box; }
-        .banner-naranja { background-color: var(--naranja); border-radius: 40px; padding: 60px; color: white; text-align: left; box-sizing: border-box; }
+        .banner-naranja { background-color: var(--fondo-oscuro); border-radius: 40px; padding: 60px; color: white; text-align: left; box-sizing: border-box; }
         .tag-opcional { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
         .banner-naranja h2 { font-size: 3.5rem; margin: 20px 0; font-weight: 800; }
         .banner-naranja p { font-size: 1.2rem; line-height: 1.6; max-width: 800px; }
@@ -496,7 +497,11 @@
 
         .logros-lista { list-style: none; padding: 0; margin: 25px 0 0 0; display: flex; flex-direction: column; gap: 10px; }
         .logros-lista li { background: #f8f9fa; border-left: 4px solid var(--naranja); padding: 10px 15px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; color: #222; }
-        .hero-gratis { background: var(--naranja); color: white; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 1rem; margin: -10px 0 28px 0; }
+        .hero-gratis { background: var(--verde); color: #052e16; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 1rem; margin: -10px 0 28px 0; }
+
+        .btn-verde { background-color: var(--verde); color: #052e16; }
+        .hero-cupos { font-weight: 700; font-size: 0.95rem; margin: -12px 0 26px 0; opacity: 0.95; }
+        .link-instagram { color: var(--texto-gris); font-weight: 600; text-decoration: underline; }
 
         /* AJUSTES PARA CELULARES Y PANTALLAS CHICAS */
         @media (max-width: 900px) {
@@ -560,6 +565,7 @@
             <h1>Te ayudo a mejorar tu nivel en el <span>tenis de mesa</span></h1>
             <p>Clases particulares, individuales y personalizadas en Junín — trabajamos lo que vos realmente necesitás mejorar.</p>
             <div class="hero-gratis">🎁 Primera clase de 30 minutos GRATIS</div>
+            <p class="hero-cupos" id="cuposAviso" style="display: none;"></p>
             <a href="https://wa.me/5492364543539?text=Hola%20Mateo%2C%20quiero%20consultar%20por%20clases%20de%20tenis%20de%20mesa" target="_blank" rel="noopener noreferrer" class="btn-whatsapp link-whatsapp-medible">Escribime por WhatsApp</a>
         </section>
 
@@ -768,6 +774,7 @@
                             <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
                         </div>
                         <p style="margin: 12px 0 0 0; font-size: 0.95rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando...</p>
+                        <div id="perfilHitos" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px;"></div>
                     </div>
                 </div>
 
@@ -779,8 +786,9 @@
                         <p style="margin: 0 0 15px 0; font-size: 0.95rem; color: #555;" id="mioGomaReves"><strong>Goma Revés:</strong> Cargando...</p>
                         <h3 style="margin: 15px 0 6px 0; font-size: 1.1rem; color: #222;">💡 OBJETIVO / ENFOQUE</h3>
                         <p style="margin: 0; font-size: 0.95rem; color: #555; line-height: 1.4;" id="mioRecomendacion">Cargando objetivo...</p>
+                        <div id="miChecklist"></div>
                     </div>
-                    <a href="https://wa.me/5492364543539?text=Hola%20Mateo%2C%20quiero%20reservar%20mi%20pr%C3%B3xima%20clase" target="_blank" rel="noopener noreferrer" class="btn-auth-primario link-whatsapp-medible" style="text-align: center; text-decoration: none; display: block; padding: 12px; margin-top: 25px; border-radius: 10px;">📅 Reservar Próxima Clase</a>
+                    <a href="https://wa.me/5492364543539?text=Hola%20Mateo%2C%20quiero%20reservar%20mi%20pr%C3%B3xima%20clase" target="_blank" rel="noopener noreferrer" class="btn-auth-primario btn-verde link-whatsapp-medible" style="text-align: center; text-decoration: none; display: block; padding: 12px; margin-top: 25px; border-radius: 10px;">📅 Reservar Próxima Clase</a>
                 </div>
             </div>
 
@@ -901,10 +909,11 @@
         <h2>¿Empezamos?</h2>
         <p>Si querés consultar por clases o por el análisis de juego, escribime directamente por WhatsApp.</p>
         <a href="https://wa.me/5492364543539?text=Hola%20Mateo%2C%20quiero%20consultar%20por%20clases%20de%20tenis%20de%20mesa" target="_blank" rel="noopener noreferrer" class="btn-whatsapp link-whatsapp-medible">Escribime por WhatsApp</a>
+        <p style="margin: 26px 0 0 0; opacity: 1;"><a href="https://instagram.com/mateovildoza_tdm" target="_blank" rel="noopener noreferrer" class="link-instagram">📸 Seguime en Instagram: @mateovildoza_tdm</a></p>
     </section>
 
     <footer class="footer">
-        Mateo Vildoza • Clases de Tenis de Mesa en Junín
+        Mateo Vildoza • Clases de Tenis de Mesa en Junín • <a href="https://instagram.com/mateovildoza_tdm" target="_blank" rel="noopener noreferrer" class="link-instagram">@mateovildoza_tdm</a>
     </footer>
 
     <!-- Lógica de JavaScript y Firebase -->
@@ -1052,6 +1061,7 @@
             let recomendacion = "Pendiente de actualización por el entrenador.";
             let proximaClase = "";
             let notaClase = "";
+            let objetivos = [];
             let historialClases = [];
 
             if (snapUsuario.exists()) {
@@ -1064,6 +1074,7 @@
                 recomendacion = datos.recomendacion || recomendacion;
                 proximaClase = datos.proximaClase || "";
                 notaClase = datos.notaClase || "";
+                objetivos = datos.objetivos || [];
                 historialClases = datos.historialClases || [];
             } else if (esMiPerfil) {
                 await setDoc(refUsuario, {
@@ -1112,6 +1123,12 @@
                 document.getElementById('mioGomaDrive').innerHTML = `<strong>Goma Drive:</strong> ${escapeHTML(gomaDrive)}`;
                 document.getElementById('mioGomaReves').innerHTML = `<strong>Goma Revés:</strong> ${escapeHTML(gomaReves)}`;
                 document.getElementById('mioRecomendacion').textContent = recomendacion;
+                const contLista = document.getElementById('miChecklist');
+                const hechos = objetivos.filter(o => o.cumplido).length;
+                contLista.innerHTML = objetivos.length
+                    ? `<p style="margin: 14px 0 6px 0; font-weight: 700; font-size: 0.9rem; color: #222;">✅ ${hechos} de ${objetivos.length} objetivos cumplidos</p>` +
+                      objetivos.map(o => `<p style="margin: 4px 0; font-size: 0.9rem; color: ${o.cumplido ? '#166534' : '#555'};">${o.cumplido ? '✅' : '⬜'} ${escapeHTML(o.texto || '')}</p>`).join('')
+                    : '';
 
                 document.getElementById('editEdad').value = edad !== "--" ? edad : "";
                 document.getElementById('editNivel').value = nivel !== "Sin especificar" ? nivel : "";
@@ -1120,6 +1137,21 @@
                 document.getElementById('editGomaReves').value = gomaReves !== "Sin especificar" ? gomaReves : "";
 
                 document.getElementById('perfilHorasNum').textContent = `${horasCalculadas} hs`;
+
+                const hitos = [
+                    { ok: historialClases.length >= 1, txt: '🏓 Primera clase' },
+                    { ok: horasCalculadas >= 5, txt: '🔥 5 horas' },
+                    { ok: horasCalculadas >= 10, txt: '🏆 10 horas: clase gratis' }
+                ];
+                document.getElementById('perfilHitos').innerHTML = hitos.map(h =>
+                    `<span style="padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; ${h.ok ? 'background: #dcfce7; color: #166534;' : 'background: #f1f3f5; color: #adb5bd;'}">${h.ok ? '✓ ' : ''}${h.txt}</span>`).join('');
+                const logros = hitos.filter(h => h.ok).length + objetivos.filter(o => o.cumplido).length;
+                try {
+                    const clave = 'logros_' + usuarioActual.uid;
+                    const previo = localStorage.getItem(clave);
+                    if (previo !== null && logros > parseInt(previo)) lanzarConfeti();
+                    localStorage.setItem(clave, String(logros));
+                } catch (e) {}
 
                 let porcentaje = (horasActualesCiclo / 10) * 100;
                 if (porcentaje > 100) porcentaje = 100;
@@ -1198,6 +1230,33 @@
                 }
             } catch (e) {}
         }
+
+        function lanzarConfeti() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const colores = ['#f05423', '#22c55e', '#facc15', '#38bdf8', '#ffffff'];
+            for (let n = 0; n < 40; n++) {
+                const c = document.createElement('i');
+                c.style.cssText = `position: fixed; top: -14px; left: ${Math.random() * 100}vw; width: 8px; height: 12px; background: ${colores[n % colores.length]}; border-radius: 2px; z-index: 3000; pointer-events: none;`;
+                document.body.appendChild(c);
+                c.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 40}px) rotate(${Math.random() * 720}deg)`, opacity: 0.9 }
+                ], { duration: 1800 + Math.random() * 1500, easing: 'ease-in' }).onfinish = () => c.remove();
+            }
+        }
+
+        // Lugares disponibles de la semana (los carga Mateo desde el panel; si no hay dato, no se muestra nada)
+        async function cargarCupos() {
+            try {
+                const snap = await getDoc(doc(db, "config", "publico"));
+                const n = snap.exists() ? snap.data().cupos : null;
+                const el = document.getElementById('cuposAviso');
+                if (typeof n !== 'number' || !el) return;
+                el.textContent = n > 0 ? `🔥 Esta semana quedan ${n} ${n === 1 ? 'lugar' : 'lugares'}` : 'Esta semana ya no quedan lugares. Escribime y coordinamos para la próxima.';
+                el.style.display = 'block';
+            } catch (e) {}
+        }
+        cargarCupos();
 
         let uidAnterior;
         window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });
