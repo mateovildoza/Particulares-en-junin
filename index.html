@@ -500,7 +500,6 @@
         .hero-gratis { background: var(--verde); color: #052e16; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 1rem; margin: -10px 0 28px 0; }
 
         .btn-verde { background-color: var(--verde); color: #052e16; }
-        .hero-cupos { font-weight: 700; font-size: 0.95rem; margin: -12px 0 26px 0; opacity: 0.95; }
         .link-instagram { color: var(--texto-gris); font-weight: 600; text-decoration: underline; }
 
         /* AJUSTES PARA CELULARES Y PANTALLAS CHICAS */
@@ -565,7 +564,6 @@
             <h1>Te ayudo a mejorar tu nivel en el <span>tenis de mesa</span></h1>
             <p>Clases particulares, individuales y personalizadas en Junín — trabajamos lo que vos realmente necesitás mejorar.</p>
             <div class="hero-gratis">🎁 Primera clase de 30 minutos GRATIS</div>
-            <p class="hero-cupos" id="cuposAviso" style="display: none;"></p>
             <a href="https://wa.me/5492364543539?text=Hola%20Mateo%2C%20quiero%20consultar%20por%20clases%20de%20tenis%20de%20mesa" target="_blank" rel="noopener noreferrer" class="btn-whatsapp link-whatsapp-medible">Escribime por WhatsApp</a>
         </section>
 
@@ -727,20 +725,7 @@
                     <p style="margin: 4px 0 0 0; color: #adb5bd; font-size: 0.9rem;" id="fichaNivelSub">Espere un momento</p>
                 </div>
                 <div class="ficha-body">
-                    <div class="ficha-seccion-titulo">Datos Deportivos</div>
-                    <div class="ficha-grid-datos">
-                        <div class="ficha-dato-item"><strong>Madera:</strong> <span id="valMadera">Cargando...</span></div>
-                        <div class="ficha-dato-item"><strong>Goma Drive:</strong> <span id="valGomaDrive">Cargando...</span></div>
-                        <div class="ficha-dato-item"><strong>Goma Revés:</strong> <span id="valGomaReves">Cargando...</span></div>
-                        <div class="ficha-dato-item"><strong>Nivel / Categoría:</strong> <span id="valNivel">Cargando...</span></div>
-                    </div>
-                    <div class="ficha-seccion-titulo">Datos Personales</div>
-                    <div class="ficha-grid-datos">
-                        <div class="ficha-dato-item"><strong>Edad:</strong> <span id="valEdad">-</span> años</div>
-                        <div class="ficha-dato-item"><strong>Entrenador:</strong> Mateo Vildoza</div>
-                    </div>
-                    <div class="ficha-seccion-titulo">Objetivo PRINCIPAL</div>
-                    <p style="color: #444; font-size: 1rem; line-height: 1.5; margin: 10px 0 0 0;" id="fichaRecomendacion">Cargando información...</p>
+                    <div id="fichaHitos"></div>
                 </div>
             </div>
         </div>
@@ -774,7 +759,7 @@
                             <div class="barra-progreso-relleno" id="barraProgreso" style="width: 0%;"></div>
                         </div>
                         <p style="margin: 12px 0 0 0; font-size: 0.95rem; color: var(--naranja); font-weight: 700;" id="perfilTextoMeta">Calculando...</p>
-                        <div id="perfilHitos" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px;"></div>
+                        <div id="perfilHitos" style="margin-top: 20px;"></div>
                     </div>
                 </div>
 
@@ -1041,13 +1026,16 @@
 
             if (!esMiPerfil) {
                 document.getElementById('fichaNombre').textContent = nombreFallback;
-                document.getElementById('fichaNivelSub').textContent = "Cargando categoría...";
-                document.getElementById('valMadera').textContent = "Cargando...";
-                document.getElementById('valGomaDrive').textContent = "Cargando...";
-                document.getElementById('valGomaReves').textContent = "Cargando...";
-                document.getElementById('valNivel').textContent = "Cargando...";
-                document.getElementById('valEdad').textContent = "-";
-                document.getElementById('fichaRecomendacion').textContent = "Cargando información...";
+                document.getElementById('fichaNivelSub').textContent = 'Alumno de Mateo Vildoza';
+                const contHitos = document.getElementById('fichaHitos');
+                contHitos.innerHTML = '<p style="color: #666;">Cargando hitos...</p>';
+                let h = { primeraClase: false, cincoHoras: false, diezHoras: false };
+                try {
+                    const snapPub = await getDoc(doc(db, "perfilesPublicos", uidTarget));
+                    if (snapPub.exists()) h = { ...h, ...snapPub.data() };
+                } catch (e) {}
+                contHitos.innerHTML = hitosCajaHTML(h);
+                return;
             }
 
             const refUsuario = doc(db, "usuarios", uidTarget);
@@ -1143,8 +1131,7 @@
                     { ok: horasCalculadas >= 5, txt: '🔥 5 horas' },
                     { ok: horasCalculadas >= 10, txt: '🏆 10 horas: clase gratis' }
                 ];
-                document.getElementById('perfilHitos').innerHTML = hitos.map(h =>
-                    `<span style="padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; ${h.ok ? 'background: #dcfce7; color: #166534;' : 'background: #f1f3f5; color: #adb5bd;'}">${h.ok ? '✓ ' : ''}${h.txt}</span>`).join('');
+                document.getElementById('perfilHitos').innerHTML = hitosCajaHTML({ primeraClase: hitos[0].ok, cincoHoras: hitos[1].ok, diezHoras: hitos[2].ok });
                 const logros = hitos.filter(h => h.ok).length + objetivos.filter(o => o.cumplido).length;
                 try {
                     const clave = 'logros_' + usuarioActual.uid;
@@ -1175,15 +1162,6 @@
                         cuerpoTabla.innerHTML += `<tr><td>${escapeHTML(c.fecha)}</td><td>${c.duracion}h</td><td>${escapeHTML(c.estado)}</td><td>${escapeHTML(c.nota || "")}</td></tr>`;
                     });
                 }
-            } else {
-                document.getElementById('fichaNombre').textContent = nombreFallback;
-                document.getElementById('fichaNivelSub').textContent = `Categoría / Nivel: ${escapeHTML(nivel)}`;
-                document.getElementById('valMadera').textContent = madera;
-                document.getElementById('valGomaDrive').textContent = gomaDrive;
-                document.getElementById('valGomaReves').textContent = gomaReves;
-                document.getElementById('valNivel').textContent = nivel;
-                document.getElementById('valEdad').textContent = edad;
-                document.getElementById('fichaRecomendacion').textContent = recomendacion;
             }
         }
 
@@ -1231,6 +1209,19 @@
             } catch (e) {}
         }
 
+        function hitosCajaHTML(h) {
+            const lista = [
+                { ok: h.primeraClase, icono: '🏓', txt: 'Primera clase' },
+                { ok: h.cincoHoras, icono: '🔥', txt: '5 horas' },
+                { ok: h.diezHoras, icono: '🏆', txt: '10 horas: clase gratis' }
+            ];
+            return `<div style="border: 1px solid #e1e4e8; background: #f8f9fa; border-radius: 14px; padding: 16px;">
+                <p style="margin: 0 0 12px 0; font-weight: 800; font-size: 0.95rem; color: #222;">🏅 HITOS</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">` +
+                lista.map(x => `<div style="text-align: center; padding: 12px 6px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; ${x.ok ? 'background: #dcfce7; color: #166534;' : 'background: #eceff1; color: #9aa4ad;'}"><div style="font-size: 1.6rem; ${x.ok ? '' : 'filter: grayscale(1); opacity: 0.5;'}">${x.icono}</div>${x.ok ? '✓ ' : ''}${x.txt}</div>`).join('') +
+                `</div></div>`;
+        }
+
         function lanzarConfeti() {
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             const colores = ['#f05423', '#22c55e', '#facc15', '#38bdf8', '#ffffff'];
@@ -1244,19 +1235,6 @@
                 ], { duration: 1800 + Math.random() * 1500, easing: 'ease-in' }).onfinish = () => c.remove();
             }
         }
-
-        // Lugares disponibles de la semana (los carga Mateo desde el panel; si no hay dato, no se muestra nada)
-        async function cargarCupos() {
-            try {
-                const snap = await getDoc(doc(db, "config", "publico"));
-                const n = snap.exists() ? snap.data().cupos : null;
-                const el = document.getElementById('cuposAviso');
-                if (typeof n !== 'number' || !el) return;
-                el.textContent = n > 0 ? `🔥 Esta semana quedan ${n} ${n === 1 ? 'lugar' : 'lugares'}` : 'Esta semana ya no quedan lugares. Escribime y coordinamos para la próxima.';
-                el.style.display = 'block';
-            } catch (e) {}
-        }
-        cargarCupos();
 
         let uidAnterior;
         window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });

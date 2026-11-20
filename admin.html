@@ -143,13 +143,6 @@
             <h2>Alumnos</h2>
             <p class="sub">Tocá "Ver / editar" para cambiar sus datos, su objetivo y sus clases.</p>
             <p><button class="btn chico suave" id="btnVerResenas" type="button">Ver reseñas</button></p>
-            <div class="campo" style="max-width: 440px;">
-                <label for="cuposInput">Lugares disponibles esta semana (se muestra en tu página; vacío = no se muestra)</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="number" id="cuposInput" min="0" placeholder="Ej: 3">
-                    <button class="btn chico" id="btnGuardarCupos" type="button">Guardar</button>
-                </div>
-            </div>
             <div class="barra">
                 <input type="search" id="buscar" placeholder="Buscar por nombre o nivel" aria-label="Buscar alumno">
             </div>
@@ -245,7 +238,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB3ZY3m-KiGs6BW3tTCdqw-aES24N0nP_k",
@@ -320,6 +313,17 @@
         });
 
         // ---------- Lista ----------
+        // Resumen público (solo hitos, sin horas) para que los alumnos vean los hitos de otros
+        function hitosPublicos(historial) {
+            const h = horasPagadas(historial);
+            return { primeraClase: (historial || []).length >= 1, cincoHoras: h >= 5, diezHoras: h >= 10 };
+        }
+        function sincronizarHitos() {
+            alumnos.filter(x => !x.sinPerfil).forEach(x => {
+                setDoc(doc(db, 'perfilesPublicos', x.id), hitosPublicos(x.data.historialClases)).catch(() => {});
+            });
+        }
+
         async function cargarAlumnos() {
             mostrar('vistaLista');
             $('listaCuerpo').innerHTML = '<tr><td colspan="5">Cargando alumnos...</td></tr>';
@@ -341,10 +345,7 @@
                 Object.keys(nombresDeResenas).forEach(uid => {
                     if (!conPerfil.has(uid)) alumnos.push({ id: uid, data: {}, sinPerfil: true });
                 });
-                try {
-                    const cfg = await getDoc(doc(db, 'config', 'publico'));
-                    if (cfg.exists() && typeof cfg.data().cupos === 'number') $('cuposInput').value = cfg.data().cupos;
-                } catch (e) {}
+                sincronizarHitos();
                 renderLista();
             } catch (err) {
                 $('listaCuerpo').innerHTML = `<tr><td colspan="5">No se pudo cargar la lista (${escapeHTML(err.message)}). Revisá que las reglas de Firestore permitan leer la colección "usuarios" con tu UID.</td></tr>`;
@@ -438,16 +439,6 @@
             renderClases();
         });
 
-        $('btnGuardarCupos').addEventListener('click', async () => {
-            const v = $('cuposInput').value.trim();
-            try {
-                await setDoc(doc(db, 'config', 'publico'), { cupos: v === '' ? null : Math.max(0, parseInt(v) || 0) }, { merge: true });
-                alert('Listo, ya se ve en tu página.');
-            } catch (err) {
-                alert('No se pudo guardar: ' + err.message + '. Revisá que hayas publicado las reglas nuevas de Firestore.');
-            }
-        });
-
         // ---------- Reseñas ----------
         async function cargarResenasAdmin() {
             const cont = $('resenasLista');
@@ -512,6 +503,7 @@
 
             try {
                 await setDoc(doc(db, 'usuarios', actual.id), datos, { merge: true });
+                setDoc(doc(db, 'perfilesPublicos', actual.id), hitosPublicos(datos.historialClases)).catch(() => {});
                 const alumno = alumnos.find(a => a.id === actual.id);
                 alumno.data = { ...alumno.data, ...datos };
                 delete alumno.sinPerfil;
