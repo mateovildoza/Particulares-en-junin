@@ -201,10 +201,6 @@
                         <input type="text" id="edProxima" placeholder="Ej: Jueves 21/11 a las 18:00">
                     </div>
 
-                    <div class="campo">
-                        <label for="edNota">Nota para el alumno (la ve destacada en su perfil)</label>
-                        <textarea id="edNota" rows="2" placeholder="Ej: Para la próxima, practicá el saque con efecto"></textarea>
-                    </div>
 
                     <div class="campo">
                         <label for="edObjetivos">Objetivos (uno por línea; poné ✓ al principio de los que ya cumplió)</label>
@@ -213,7 +209,7 @@
 
                     <h3 style="margin: 28px 0 8px;">Clases</h3>
                     <table class="clases-tabla">
-                        <thead><tr><th>Fecha</th><th>Horas</th><th>Estado</th><th>Nota de esa clase</th><th></th></tr></thead>
+                        <thead><tr><th>Fecha</th><th>Horas</th><th>Estado</th><th>Nota para el alumno</th><th></th></tr></thead>
                         <tbody id="clasesCuerpo"></tbody>
                     </table>
                     <p class="total" id="edTotal"></p>
@@ -314,13 +310,38 @@
 
         // ---------- Lista ----------
         // Resumen público (solo hitos, sin horas) para que los alumnos vean los hitos de otros
-        function hitosPublicos(historial) {
+        function hitosPublicos(historial, objetivos) {
             const h = horasPagadas(historial);
-            return { primeraClase: (historial || []).length >= 1, cincoHoras: h >= 5, diezHoras: h >= 10 };
+            const hechos = (objetivos || []).filter(o => o.cumplido).length;
+            return {
+                primeraClase: (historial || []).length >= 1,
+                cincoHoras: h >= 5,
+                diezHoras: h >= 10,
+                cincoObjetivos: hechos >= 5,
+                diezObjetivos: hechos >= 10,
+                dosMeses: dosMesesDesdePrimera(historial)
+            };
+        }
+        function parsearFecha(txt) {
+            const m = String(txt || '').match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+            if (!m) return null;
+            const dia = +m[1], mes = +m[2];
+            let anio = +m[3];
+            if (anio < 100) anio += 2000;
+            if (mes < 1 || mes > 12) return null;
+            const f = new Date(anio, mes - 1, dia);
+            return isNaN(f) ? null : f;
+        }
+        function dosMesesDesdePrimera(historial) {
+            const fechas = (historial || []).map(c => parsearFecha(c.fecha)).filter(Boolean);
+            if (!fechas.length) return false;
+            const limite = new Date(Math.min(...fechas));
+            limite.setMonth(limite.getMonth() + 2);
+            return new Date() >= limite;
         }
         function sincronizarHitos() {
             alumnos.filter(x => !x.sinPerfil).forEach(x => {
-                setDoc(doc(db, 'perfilesPublicos', x.id), hitosPublicos(x.data.historialClases)).catch(() => {});
+                setDoc(doc(db, 'perfilesPublicos', x.id), hitosPublicos(x.data.historialClases, x.data.objetivos)).catch(() => {});
             });
         }
 
@@ -390,7 +411,6 @@
             $('edGomaReves').value = d.gomaReves || '';
             $('edObjetivo').value = d.recomendacion || '';
             $('edProxima').value = d.proximaClase || '';
-            $('edNota').value = d.notaClase || '';
             $('edObjetivos').value = (d.objetivos || []).map(o => (o.cumplido ? '✓ ' : '') + (o.texto || '')).join('\n');
             renderClases();
             mostrar('vistaEditar');
@@ -486,7 +506,6 @@
                 gomaReves: $('edGomaReves').value.trim(),
                 recomendacion: $('edObjetivo').value.trim(),
                 proximaClase: $('edProxima').value.trim(),
-                notaClase: $('edNota').value.trim(),
                 objetivos: $('edObjetivos').value.split('\n').map(l => l.trim()).filter(Boolean).map(l => ({
                     texto: l.replace(/^(✓|\[x\])\s*/i, ''),
                     cumplido: /^(✓|\[x\])/i.test(l)
@@ -503,7 +522,7 @@
 
             try {
                 await setDoc(doc(db, 'usuarios', actual.id), datos, { merge: true });
-                setDoc(doc(db, 'perfilesPublicos', actual.id), hitosPublicos(datos.historialClases)).catch(() => {});
+                setDoc(doc(db, 'perfilesPublicos', actual.id), hitosPublicos(datos.historialClases, datos.objetivos)).catch(() => {});
                 const alumno = alumnos.find(a => a.id === actual.id);
                 alumno.data = { ...alumno.data, ...datos };
                 delete alumno.sinPerfil;

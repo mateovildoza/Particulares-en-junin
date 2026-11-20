@@ -742,11 +742,10 @@
                 </div>
             </div>
 
-            <!-- Recuadro destacado para la próxima clase y notas del profe -->
+            <!-- Recuadro destacado para la próxima clase -->
             <div id="bloqueProximaClaseContainer" style="background: #fff4ef; border: 1px solid #f9d3c4; border-radius: 16px; padding: 25px; margin-bottom: 25px; display: none;">
-                <h3 style="margin: 0 0 10px 0; font-size: 1.15rem; color: var(--naranja);">📅 PRÓXIMA CLASE & NOTAS DE TU ENTRENADOR</h3>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.15rem; color: var(--naranja);">📅 PRÓXIMA CLASE</h3>
                 <p id="textoProximaClase" style="margin: 0 0 8px 0; font-size: 1.05rem; color: #222; font-weight: 700;"></p>
-                <p id="textoNotaClase" style="margin: 0; font-size: 0.98rem; color: #444; line-height: 1.5;"></p>
             </div>
 
             <div class="perfil-grid-dos-columnas">
@@ -1048,7 +1047,6 @@
             let gomaReves = "Sin especificar";
             let recomendacion = "Pendiente de actualización por el entrenador.";
             let proximaClase = "";
-            let notaClase = "";
             let objetivos = [];
             let historialClases = [];
 
@@ -1061,7 +1059,6 @@
                 gomaReves = datos.gomaReves || gomaReves;
                 recomendacion = datos.recomendacion || recomendacion;
                 proximaClase = datos.proximaClase || "";
-                notaClase = datos.notaClase || "";
                 objetivos = datos.objetivos || [];
                 historialClases = datos.historialClases || [];
             } else if (esMiPerfil) {
@@ -1099,10 +1096,9 @@
 
                 // Mostrar recuadro de próxima clase / notas si existe
                 const bloqueProxima = document.getElementById('bloqueProximaClaseContainer');
-                if (proximaClase || notaClase) {
+                if (proximaClase) {
                     bloqueProxima.style.display = 'block';
                     document.getElementById('textoProximaClase').textContent = proximaClase ? `🕒 Próxima clase: ${proximaClase}` : '';
-                    document.getElementById('textoNotaClase').textContent = notaClase ? `📝 Notas de la clase: ${notaClase}` : '';
                 } else {
                     bloqueProxima.style.display = 'none';
                 }
@@ -1126,13 +1122,20 @@
 
                 document.getElementById('perfilHorasNum').textContent = `${horasCalculadas} hs`;
 
-                const hitos = [
-                    { ok: historialClases.length >= 1, txt: '🏓 Primera clase' },
-                    { ok: horasCalculadas >= 5, txt: '🔥 5 horas' },
-                    { ok: horasCalculadas >= 10, txt: '🏆 10 horas: clase gratis' }
-                ];
-                document.getElementById('perfilHitos').innerHTML = hitosCajaHTML({ primeraClase: hitos[0].ok, cincoHoras: hitos[1].ok, diezHoras: hitos[2].ok });
-                const logros = hitos.filter(h => h.ok).length + objetivos.filter(o => o.cumplido).length;
+                const objHechos = objetivos.filter(o => o.cumplido).length;
+                const flagsHitos = {
+                    primeraClase: historialClases.length >= 1,
+                    cincoHoras: horasCalculadas >= 5,
+                    diezHoras: horasCalculadas >= 10,
+                    cincoObjetivos: objHechos >= 5,
+                    diezObjetivos: objHechos >= 10,
+                    dosMeses: dosMesesDesdePrimera(historialClases)
+                };
+                const mes = resumenDelMes(historialClases);
+                document.getElementById('perfilHitos').innerHTML =
+                    `<p style="margin: 0 0 12px 0; padding: 10px 14px; background: #fff4ef; border: 1px solid #f9d3c4; border-radius: 12px; font-size: 0.9rem; font-weight: 700; color: #222;">📆 Este mes: ${mes.clases} ${mes.clases === 1 ? 'clase' : 'clases'} · ${mes.horas} hs</p>` +
+                    hitosCajaHTML(flagsHitos);
+                const logros = Object.values(flagsHitos).filter(Boolean).length + objHechos;
                 try {
                     const clave = 'logros_' + usuarioActual.uid;
                     const previo = localStorage.getItem(clave);
@@ -1213,13 +1216,47 @@
             const lista = [
                 { ok: h.primeraClase, icono: '🏓', txt: 'Primera clase' },
                 { ok: h.cincoHoras, icono: '🔥', txt: '5 horas' },
-                { ok: h.diezHoras, icono: '🏆', txt: '10 horas: clase gratis' }
+                { ok: h.diezHoras, icono: '🏆', txt: '10 horas: clase gratis' },
+                { ok: h.cincoObjetivos, icono: '🎯', txt: '5 objetivos cumplidos' },
+                { ok: h.diezObjetivos, icono: '🎓', txt: '10 objetivos cumplidos' },
+                { ok: h.dosMeses, icono: '⏳', txt: '2 meses entrenando' }
             ];
             return `<div style="border: 1px solid #e1e4e8; background: #f8f9fa; border-radius: 14px; padding: 16px;">
                 <p style="margin: 0 0 12px 0; font-weight: 800; font-size: 0.95rem; color: #222;">🏅 HITOS</p>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">` +
                 lista.map(x => `<div style="text-align: center; padding: 12px 6px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; ${x.ok ? 'background: #dcfce7; color: #166534;' : 'background: #eceff1; color: #9aa4ad;'}"><div style="font-size: 1.6rem; ${x.ok ? '' : 'filter: grayscale(1); opacity: 0.5;'}">${x.icono}</div>${x.ok ? '✓ ' : ''}${x.txt}</div>`).join('') +
                 `</div></div>`;
+        }
+
+        function parsearFecha(txt) {
+            const m = String(txt || '').match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+            if (!m) return null;
+            const dia = +m[1], mes = +m[2];
+            let anio = +m[3];
+            if (anio < 100) anio += 2000;
+            if (mes < 1 || mes > 12) return null;
+            const f = new Date(anio, mes - 1, dia);
+            return isNaN(f) ? null : f;
+        }
+        function dosMesesDesdePrimera(historial) {
+            const fechas = (historial || []).map(c => parsearFecha(c.fecha)).filter(Boolean);
+            if (!fechas.length) return false;
+            const limite = new Date(Math.min(...fechas));
+            limite.setMonth(limite.getMonth() + 2);
+            return new Date() >= limite;
+        }
+
+        function resumenDelMes(historial) {
+            const hoy = new Date();
+            let clases = 0, horas = 0;
+            (historial || []).forEach(c => {
+                const f = parsearFecha(c.fecha);
+                if (f && f.getMonth() === hoy.getMonth() && f.getFullYear() === hoy.getFullYear()) {
+                    clases++;
+                    horas += parseFloat(c.duracion) || 0;
+                }
+            });
+            return { clases, horas };
         }
 
         function lanzarConfeti() {
