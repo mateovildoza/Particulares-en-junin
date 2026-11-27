@@ -8,12 +8,12 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Clases de Tenis de Mesa en Junín | Mateo Vildoza">
     <meta property="og:description" content="Clases particulares de tenis de mesa en Junín. Primera clase de 30 minutos gratis. Individuales y personalizadas con Mateo Vildoza.">
-    <meta property="og:url" content="https://mateovildoza.github.io/Particulares-en-junin/">
-    <link rel="canonical" href="https://mateovildoza.github.io/Particulares-en-junin/">
-    <meta property="og:image" content="https://mateovildoza.github.io/Particulares-en-junin/fotofondonew.jpeg">
+    <meta property="og:url" content="https://particulares-en-junin.netlify.app/">
+    <link rel="canonical" href="https://particulares-en-junin.netlify.app/">
+    <meta property="og:image" content="https://particulares-en-junin.netlify.app/fotofondonew.jpeg">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsActivityLocation","name":"Clases de Tenis de Mesa en Junín - Mateo Vildoza","description":"Clases particulares, individuales y personalizadas de tenis de mesa en Junín, Buenos Aires. Primera clase de 30 minutos gratis.","url":"https://mateovildoza.github.io/Particulares-en-junin/","telephone":"+5492364543539","areaServed":{"@type":"City","name":"Junín"},"sameAs":["https://instagram.com/mateovildoza_tdm"]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsActivityLocation","name":"Clases de Tenis de Mesa en Junín - Mateo Vildoza","description":"Clases particulares, individuales y personalizadas de tenis de mesa en Junín, Buenos Aires. Primera clase de 30 minutos gratis.","url":"https://particulares-en-junin.netlify.app/","telephone":"+5492364543539","areaServed":{"@type":"City","name":"Junín"},"sameAs":["https://instagram.com/mateovildoza_tdm"]}</script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏓</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
@@ -510,8 +510,8 @@
         body { scroll-behavior: auto; }
         :focus-visible { outline: 3px solid var(--naranja); outline-offset: 2px; }
         .hero { height: auto; min-height: 100vh; min-height: 100svh; padding: 100px 5% 60px; }
-        .bio { background: white; }
-        .como-trabajo { background: #f4f6f8; }
+        .bio { background: #f4f6f8; }
+        .como-trabajo { background: white; }
         .footer, .footer a { color: #aab2bb; }
         .btn-menu { display: none; order: 3; align-items: center; justify-content: center; width: 38px; height: 34px; border-radius: 8px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; font-size: 1.15rem; cursor: pointer; }
         .empezar-titulo { margin: 44px 0 0; font-size: 1.5rem; font-weight: 800; }
@@ -568,6 +568,12 @@
             .ficha-body { padding: 20px; }
             .ficha-header-bar { padding: 20px; }
         }
+        @media (min-width: 901px) { .nav-links a { white-space: nowrap; } }
+        @media (min-width: 901px) and (max-width: 1100px) {
+            .nav-links { display: none !important; }
+            .btn-menu { display: inline-flex; }
+            .nav-links.abierto { display: flex !important; flex-direction: column; align-items: flex-start; gap: 16px; position: absolute; top: 100%; left: 0; right: 0; background: #1c2128; padding: 18px 5% 22px; border-bottom: 1px solid rgba(255,255,255,.08); }
+        }
     </style>
 </head>
 <body>
@@ -576,13 +582,13 @@
         <a class="nav-logo" id="logoInicio" href="#">Mateo Vildoza</a>
         <div class="nav-right" id="navRightContainer">
             <ul class="nav-links" id="navLinksMenu">
+                <li><a href="#sobre-mi">Sobre mí</a></li>
                 <li><a href="#clases">Clases</a></li>
                 <li><a href="#trabajamos">Qué vemos</a></li>
                 <li><a href="#metodo">Cómo trabajo</a></li>
-                
-                <li><a href="#donde">Dónde y cuándo</a></li>
                 <li><a href="#resenas" style="color: var(--naranja);">Reseñas ⭐</a></li>
                 <li><a href="#faq">Preguntas</a></li>
+                <li><a href="#donde">Dónde y cuándo</a></li>
             </ul>
             <button class="btn-menu" id="btnMenu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinksMenu">☰</button>
             <div class="auth-bar" id="authBar">
@@ -607,7 +613,24 @@
             <a href="https://wa.me/5492364543539?text=Hola%20Mateo%2C%20quiero%20consultar%20por%20clases%20de%20tenis%20de%20mesa" target="_blank" rel="noopener noreferrer" class="btn-whatsapp link-whatsapp-medible">Escribime por WhatsApp</a>
         </section>
 
-<section id="clases" class="seccion-blanca">
+<section id="sobre-mi" class="bio">
+    <div class="bio-content">
+        <h2>Me llamo Mateo Vildoza.</h2>
+        <p>Juego al tenis de mesa y compito frecuentemente en torneos en Junín, Pergamino, Rosario y Buenos Aires. Compito en categoría 2da en TMT y 1ra FETEMBA.</p>
+        <p>Me enfoco mucho en el entrenamiento técnico, es algo que vengo trabajando intensamente. Las clases que doy son particulares, individuales y personalizadas — las adapto a cada jugador.</p>
+        
+        <ul class="logros-lista">
+            <li>🥇 Medalla de Oro — Juegos Bonaerenses U18 (2026)</li>
+            <li>🏆 Campeón Nacional — Dobles U15</li>
+            <li>🥈 Subcampeón Nacional — Equipos U15</li>
+            <li>🥉 3° Puesto Nacional — Dobles U19</li>
+            <li>🇦🇷 Participación en Campamento DAR (Desarrollo al Alto Rendimiento) — Salta</li>
+        </ul>
+    </div>
+    <img src="comomellamo2.jpeg" decoding="async" class="bio-img" alt="Mateo Vildoza">
+    </section>
+
+        <section id="clases" class="seccion-blanca">
             <span class="icon-naranja">🎯</span>
             <h2>Las clases</h2>
             <p>Las clases son individuales, nada de grupos. Me enfoco en lo que vos necesitás mejorar. Si sos principiante o si ya jugás hace tiempo, da igual — lo que importa es avanzar desde donde estás.</p>
@@ -650,24 +673,7 @@
             </div>
         </section>
 
-        <section class="bio">
-    <div class="bio-content">
-        <h2>Me llamo Mateo Vildoza.</h2>
-        <p>Juego al tenis de mesa y compito frecuentemente en torneos en Junín, Pergamino, Rosario y Buenos Aires. Compito en categoría 2da en TMT y 1ra FETEMBA.</p>
-        <p>Me enfoco mucho en el entrenamiento técnico, es algo que vengo trabajando intensamente. Las clases que doy son particulares, individuales y personalizadas — las adapto a cada jugador.</p>
-        
-        <ul class="logros-lista">
-            <li>🥇 Medalla de Oro — Juegos Bonaerenses U18 (2026)</li>
-            <li>🏆 Campeón Nacional — Dobles U15</li>
-            <li>🥈 Subcampeón Nacional — Equipos U15</li>
-            <li>🥉 3° Puesto Nacional — Dobles U19</li>
-            <li>🇦🇷 Participación en Campamento DAR (Desarrollo al Alto Rendimiento) — Salta</li>
-        </ul>
-    </div>
-    <img src="comomellamo2.jpeg" decoding="async" class="bio-img" alt="Mateo Vildoza">
-    </section>
-
-        <section class="analisis">
+<section class="analisis">
             <div class="banner-naranja">
                 <span class="tag-opcional">SERVICIO OPCIONAL</span>
                 <h2>Análisis personalizado de juego</h2>
